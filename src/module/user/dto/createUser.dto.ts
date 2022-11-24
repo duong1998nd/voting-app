@@ -1,5 +1,4 @@
 import { IsEmail, IsNotEmpty, Length } from 'class-validator';
-
 export class createUserDto{
 
     @IsNotEmpty({ message: 'Tên không được để trống' })
@@ -7,7 +6,7 @@ export class createUserDto{
     name: string;
 
     @IsNotEmpty({message: 'Email không được để trống'})
-    @IsEmail({message: 'Email không đúng định dạng' })
+    @IsEmail({},{  message: 'Email không đúng định dạng' })
     @Length(11,255, {message: 'Email trong khoảng 11-225 kí tự'})
     email:string;
 

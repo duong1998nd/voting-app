@@ -1,4 +1,4 @@
-import { Injectable} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { User } from './entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -6,8 +6,14 @@ import { updateUserDto } from './dto/updateUser.dto';
 import { loginUserDto } from './dto/loginUser.dto';
 import * as bcrypt from 'bcrypt';
 import { createUserDto } from './dto/createUser.dto';
+import { AuthLoginDto } from 'src/auth/auth-login.dto';
 
-export type User_infor = any;
+export type User_infor = {
+  id: string,
+  name: string,
+  password: string,
+  email: string
+};
 @Injectable()
 export class UserService {
   [x: string]: any;
@@ -19,8 +25,27 @@ export class UserService {
   async findAll(): Promise<User[]> {
     return await this.UserRepo.find();
   }
+  
+  async findOneById(id: string): Promise<User[]> {
+    return await this.UserRepo.findBy({id:+id});
+  }
 
-  async findOne(email: string): Promise<User_infor | undefined> {
+  async findLogin({email, password}: AuthLoginDto){
+    const userActive = await this.UserRepo.findOne({
+        where: { email: email}
+    });
+
+    if(!userActive){
+      throw new HttpException("ko tìm thấy tài khoản", HttpStatus.UNAUTHORIZED);
+    }
+    const compare_pass = await bcrypt.compare(password,userActive.password)
+    if(!compare_pass){
+      throw new HttpException("Đăng nhập thất bại", HttpStatus.UNAUTHORIZED);
+    }
+    return userActive;
+  }
+
+  async findOneByEmail(email: string): Promise<User_infor | undefined> {
     return (await this.users).find(user => user.email === email);
   }
 
@@ -31,7 +56,7 @@ export class UserService {
       delete user_bcrypt.password;
       return user_bcrypt;
     } catch (error) {
-      throw new Error('tài khoản đã tồn tại');
+      throw new Error('Nhập đẩy đủ thông tin');
     }
   }
 

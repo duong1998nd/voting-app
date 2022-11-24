@@ -4,10 +4,13 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   BaseEntity,
+  BeforeInsert,
 } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { Vote } from '../../vote/entities/vote.entity';
+import { UserRoles } from '../enum/user.enum';
 
-@Entity('users')
+@Entity('user')
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -15,22 +18,25 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', unique: true })
   email: string;
 
   @Column({ type: 'varchar' })
   password: string;
 
   @Column({ type: 'varchar' })
-  avatar: string;
+  image: string;
 
   @Column({ type: 'varchar' })
   phone: string;
 
+  @Column({ type: 'enum', enum: UserRoles, default: UserRoles.USER })
+  role: UserRoles;
+
   @Column({ type: 'text', nullable: true })
   address: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', default: '0' })
   money: string;
 
   @OneToMany(()=> Vote, (vote) => vote.id)
@@ -44,5 +50,14 @@ export class User extends BaseEntity {
 
   @Column({ type: 'datetime', nullable: true })
   delete_at: Date;
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 8);
+  }
+
+  async validatePassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
 
 }

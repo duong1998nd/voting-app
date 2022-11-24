@@ -15,7 +15,12 @@ export class UserController {
     //get by id 
     @Get(':id')
     findOne(@Param('id') id:string ){
-        return this.userService.findOneBy(id);
+        return this.userService.findOneById(id);
+    }
+
+    @Post('')
+    create(@Body() createUserDto: createUserDto) {
+        return this.userService.create(createUserDto);
     }
 
     @Post('/')
@@ -28,6 +33,7 @@ export class UserController {
     @Delete(':id')
     remove(@Param('id') id: number){
         return this.userService.remove(+id);
+
     }
 
     @Patch(':id')

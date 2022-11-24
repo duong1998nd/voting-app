@@ -20,12 +20,12 @@ export class Poll {
 
   @Column({ type: 'datetime',   default: () => 'NOW()' })
   created_at: Date; 
-
+ 
   @Column({ type: 'datetime', nullable: true })
   update_at: Date;
 
   @Column({ type: 'datetime', nullable: true })
-  delete_at: Date;
+  delete_at: Date; 
 
   @OneToMany(()=> Item, (item) => item.id)
   item: Item[];

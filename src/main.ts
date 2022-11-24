@@ -1,5 +1,4 @@
 import { NestFactory } from '@nestjs/core';
-import console from 'console';
 import { AppModule } from './app.module';
 
 async function bootstrap() {

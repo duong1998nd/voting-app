@@ -6,7 +6,7 @@ export const typeormConfig: TypeOrmModuleOptions = {
     port: 3306,
     username: 'root',
     password: '',
-    database: 'votingApp',
+    database: 'voting_app',
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    synchronize: true,
-};
+    synchronize: true, 
+};   
