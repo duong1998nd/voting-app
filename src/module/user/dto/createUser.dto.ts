@@ -1,5 +1,8 @@
 import { IsEmail, IsNotEmpty, Length } from 'class-validator';
 export class createUserDto{
+    @IsNotEmpty({ message: 'img không được để trống' })
+    @Length(5,255, {message: 'img trong khoảng từ 5-225 kí tự'})
+    image: string;
 
     @IsNotEmpty({ message: 'Tên không được để trống' })
     @Length(5,255, {message: 'Tên trong khoảng từ 5-225 kí tự'})

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseGuards, Request, Body, HttpCode, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Request, Body, HttpCode, UsePipes, ValidationPipe, Render } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AppService } from './app.service';
 import { AuthLoginDto } from './auth/auth-login.dto';
@@ -14,7 +14,12 @@ export class AppController {
     private authService: AuthService,
     private userService: UserService
     ) {}
-
+    
+    @Get()
+    @Render('index.hbs')
+    rootsss() {
+      return { message: 'Hello world!' };
+    }
     @Post('login')
     login(@Body() loginAdminDto:AuthLoginDto) {
       return this.authService.login(loginAdminDto)

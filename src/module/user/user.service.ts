@@ -52,10 +52,14 @@ export class UserService {
   async create(data: createUserDto){
     data.password =  await bcrypt.hash(data.password, 10);
     try {
-      const user_bcrypt = await this.UserRepo.save(data);
+      console.log({...data});    
+      const user_bcrypt = await this.UserRepo.save({...data});
       delete user_bcrypt.password;
+      console.log(user_bcrypt);
       return user_bcrypt;
     } catch (error) {
+      console.log(error);
+      
       throw new Error('Nhập đẩy đủ thông tin');
     }
   }
