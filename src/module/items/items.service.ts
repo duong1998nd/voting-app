@@ -6,15 +6,17 @@ import { UpdateItemDto } from './dto/update-item.dto';
 import { Item } from './entities/item.entity';
 
 @Injectable()
-export class ItemsService {
+export class ItemService {
   constructor(
     @InjectRepository(Item)
     private itemRepository: Repository<Item>
   ) {
   }
   create(createItemDto: CreateItemDto): Promise<Item> {
+    console.log(createItemDto)
     return this.itemRepository.save(createItemDto);
   }
+ 
 
   findAll() : Promise<Item[]> {
     return this.itemRepository.find();

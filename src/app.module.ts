@@ -6,18 +6,20 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeormConfig } from './config/typeorm.config';
 import { PollModule } from './module/poll/poll.module';
 import { VoteModule } from './module/vote/vote.module';
-import { ItemsModule } from './module/items/items.module';
+import { ItemModule } from './module/items/items.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 
 
+
 @Module({
-  imports: [UserModule, PollModule, TypeOrmModule.forRoot(typeormConfig), ItemsModule, VoteModule,
+  imports: [UserModule, PollModule, TypeOrmModule.forRoot(typeormConfig), ItemModule, VoteModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     AuthModule,
-    UserModule
+    UserModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],

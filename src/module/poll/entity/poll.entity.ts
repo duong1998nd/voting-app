@@ -9,11 +9,11 @@ export class Poll {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'datetime'})
+  @Column()
   start: Date;
   
-  @Column({ type: 'datetime'})
-  last: Date; 
+  @Column()
+  end: Date; 
 
   @Column({ type: 'tinyint', default: () => 0 })
   status: number;

@@ -14,7 +14,7 @@ export class PollController {
     return this.pollService.create(createPollDto);
   }
 
-  @Get('/list')
+  @Get('')
   findAll() {
     return this.pollService.findAll();
   }

@@ -31,7 +31,6 @@ export class Item {
     @Column({ type: 'tinyint'})
     status: number
 
- 
     @ManyToOne(()=>  Poll, (poll) => poll.id)
     poll: Poll;
     

@@ -11,11 +11,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class UserController {
     constructor(private userService: UserService){}
     @Get('/')
+  
     getUsers(){
         return this.userService.findAll();
     }
     @Get('/create')
-    @Render('create.hbs')
+    @Render('create.ejs')
     rootsss() {
       return { message: 'hello' };
     }

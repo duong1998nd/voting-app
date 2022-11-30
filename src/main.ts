@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { SwaggerModule } from '@nestjs/swagger';
 import { join } from 'path';
 import { AppModule } from './app.module';
 
@@ -9,9 +10,10 @@ async function bootstrap() {
   
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.setViewEngine('hbs');
+  app.setViewEngine('ejs');
   await app.listen(3000, function(){
     console.log('may chu : http://localhost:3000')
   });
+  
 }
 bootstrap();

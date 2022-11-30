@@ -16,7 +16,7 @@ export class AppController {
     ) {}
     
     @Get()
-    @Render('index.hbs')
+    @Render('index.ejs')
     rootsss() {
       return { message: 'Hello world!' };
     }
