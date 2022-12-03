@@ -11,7 +11,11 @@ import { UserService } from '../user/user.service';
     
 ],
   controllers: [VoteController],
-  providers: [VoteService],
-  exports: [VoteService]
+  providers: [
+    VoteService
+  ],
+  exports: [
+    VoteService
+  ]
 })
 export class VoteModule {}

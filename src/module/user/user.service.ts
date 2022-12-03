@@ -7,6 +7,7 @@ import { loginUserDto } from './dto/loginUser.dto';
 import * as bcrypt from 'bcrypt';
 import { createUserDto } from './dto/createUser.dto';
 import { AuthLoginDto } from 'src/auth/auth-login.dto';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 
 export type User_infor = {
   id: string,
@@ -23,6 +24,13 @@ export class UserService {
   
   async findAll(): Promise<User[]> {
     return await this.UserRepo.find();
+  }
+  
+  async paginate(options: IPaginationOptions): Promise<Pagination<User>> {
+    const queryBuilder = this.UserRepo.createQueryBuilder('c');
+    queryBuilder.orderBy('c.name', 'DESC'); // orderBy name 
+
+    return paginate<User>(queryBuilder, options);
   }
   
   async findOneById(id: string): Promise<User[]> {

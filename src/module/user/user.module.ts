@@ -13,7 +13,6 @@ import { VoteModule } from '../vote/vote.module';
 @Module({
     imports: [MulterModule.register({ dest: './uploads' }),
     TypeOrmModule.forFeature([User]),
-    CacheModule.register(),
     VoteModule,
     ItemModule,
     CacheModule.register()
