@@ -25,7 +25,7 @@ export class AuthService {
     }
 
     async login(user: AuthLoginDto){
-        const account = await this.userService.findLogin(user);
+        const account = await this.userService.findByEmail(user);
         const token = this._createToken(account)
         return {
             email: user.email,

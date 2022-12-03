@@ -16,7 +16,6 @@ export type User_infor = {
 };
 @Injectable()
 export class UserService {
-  [x: string]: any;
   constructor(
     @InjectRepository(User)
     private readonly UserRepo: Repository<User>,
@@ -30,7 +29,14 @@ export class UserService {
     return await this.UserRepo.findBy({id:+id});
   }
 
-  async findLogin({email, password}: AuthLoginDto){
+  async getUserById(id: any): Promise<User> {
+    const User = await this.UserRepo.findOne({ where: { id: id } });
+    delete User.password;
+    return User;
+  }
+
+
+  async findByEmail({email, password}: AuthLoginDto){
     const userActive = await this.UserRepo.findOne({
         where: { email: email}
     });
@@ -45,9 +51,10 @@ export class UserService {
     return userActive;
   }
 
-  async findOneByEmail(email: string): Promise<User_infor | undefined> {
-    return (await this.users).find(user => user.email === email);
-  }
+  // async findOneByEmail(email: string): Promise<User_infor | undefined> {
+  //   return (await this.users).find(user => user.email === email);
+  // }
+
 
   async create(data: createUserDto){
     data.password =  await bcrypt.hash(data.password, 10);

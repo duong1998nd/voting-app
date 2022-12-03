@@ -7,8 +7,8 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { Vote } from '../../vote/entities/vote.entity';
 import { UserRoles } from '../enum/user.enum';
+import { Vote } from 'src/module/vote/entities/vote.entity';
 
 @Entity('user')
 export class User extends BaseEntity {

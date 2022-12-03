@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm'
-import { Vote } from 'src/module/vote/entities/vote.entity'
 import { Poll } from 'src/module/poll/entity/poll.entity'
+import { Vote } from 'src/module/vote/entities/vote.entity'
  
 @Entity()
 export class Item {

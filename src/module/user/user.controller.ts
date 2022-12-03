@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Delete, UsePipes, Param, ValidationPipe, Patch, UploadedFile, UseInterceptors, Render } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Delete, UsePipes, Param, ValidationPipe, Patch, UploadedFile, UseInterceptors, Render, UseGuards, CacheInterceptor } from '@nestjs/common';
 import { updateUserDto } from './dto/updateUser.dto';
 import { loginUserDto } from './dto/loginUser.dto';
 import { createUserDto } from './dto/createUser.dto';
@@ -6,28 +6,38 @@ import { UserService } from './user.service';
 import { extname } from 'path';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Roles } from 'src/auth/roles/decorator';
+import { Role } from 'src/auth/roles/enum';
+import { RolesGuard } from 'src/auth/roles/guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Auth } from 'src/auth/auth.decorator';
 
 @Controller('User')
 export class UserController {
     constructor(private userService: UserService){}
+
+
+
+    @Auth(Role.ADMIN)
     @Get('/')
-  
     getUsers(){
         return this.userService.findAll();
     }
-    @Get('/create')
-    @Render('create.ejs')
-    rootsss() {
-      return { message: 'hello' };
-    }
+
     //get by id 
     @Get(':id')
     findOne(@Param('id') id:string ){
         return this.userService.findOneById(id);
     }
+    
+    @Get(':id/get-with-cache')
+    @UseInterceptors(CacheInterceptor)
+    TestCache(@Param('id') id:string ){
+      console.log('run here');
+      return this.userService.findOneById(id);
+    }
 
     @Post('/create')
-    
     @UseInterceptors(
         FileInterceptor('image', {
           storage: diskStorage({
