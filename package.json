@@ -39,6 +39,7 @@
     "config": "^3.3.8",
     "ejs": "^3.1.8",
     "hbs": "^4.2.0",
+    "ioredis": "^5.2.4",
     "mysql2": "^2.3.3",
     "nestjs-typeorm-paginate": "^4.0.2",
     "passport": "^0.6.0",

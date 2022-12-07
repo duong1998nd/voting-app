@@ -5,12 +5,12 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Poll } from './entity/poll.entity';
-import { VoteModule } from '../vote/vote.module';
+import { Poll } from './entities/poll.entity';
+import { Item } from '../items/entities/item.entity';
+import { Vote } from '../vote/entities/vote.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([Poll]),
+  imports: [TypeOrmModule.forFeature([Poll, Item, Vote]),
     ScheduleModule.forRoot(),
-    VoteModule
   ],
   controllers: [PollController],
   providers: [PollService]

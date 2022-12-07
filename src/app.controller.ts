@@ -22,7 +22,7 @@ export class AppController {
     
     @Roles(Role.USER)
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Get()
+    @Get('/')
     @Render('index.ejs')
     rootsss() {
       return { message: 'Hello world!' };
@@ -30,8 +30,9 @@ export class AppController {
     
     
     @Post('login')
-    login(@Body() loginAdminDto:AuthLoginDto) {
-      return this.authService.login(loginAdminDto)
+    login(@Body() loginDto:AuthLoginDto) {
+
+      return this.authService.login(loginDto)
     }
   
     @Post('register')

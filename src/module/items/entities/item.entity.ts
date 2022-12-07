@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm'
-import { Poll } from 'src/module/poll/entity/poll.entity'
+import { Poll } from 'src/module/poll/entities/poll.entity'
 import { Vote } from 'src/module/vote/entities/vote.entity'
  
 @Entity()
@@ -20,7 +20,7 @@ export class Item {
     content: string
 
     @Column({ type: 'varchar'})
-    adress: string
+    address: string
 
     @Column({ type: 'text', nullable: true})
     other: string
@@ -31,11 +31,19 @@ export class Item {
     @Column({ type: 'tinyint'})
     status: number
 
-    @ManyToOne(()=>  Poll, (poll) => poll.id)
+    @Column()
+    pollId: number;
+
+    @ManyToOne(()=>  Poll, (poll) => poll.id, { onDelete: 'CASCADE' })
     poll: Poll;
+
+    @Column(() => Vote[''])
+    @OneToMany(() => Vote, vote => vote.item)
+    votes: Vote[];
+
+    // @ManyToOne(() => Poll, poll => poll.item, { onDelete: 'CASCADE' })
+    // poll: Promise<Poll>;
     
-    @OneToMany(()=> Vote, (vote) => vote.id)
-    vote: Vote[];
     
     @Column({ type: 'datetime',   default: () => 'NOW()' })
     created_at: Date; 

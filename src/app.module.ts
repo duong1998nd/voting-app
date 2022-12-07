@@ -8,16 +8,14 @@ import { PollModule } from './module/poll/poll.module';
 import { ItemModule } from './module/items/items.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { VoteModule } from './module/vote/vote.module';
 
 import * as redisStore from 'cache-manager-redis-store';
-import { VoteModule } from './module/vote/vote.module';
-import { VoteController } from './module/vote/vote.controller';
 
 
 
 @Module({
   imports: [UserModule, PollModule, TypeOrmModule.forRoot(typeormConfig), ItemModule, 
-    VoteModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -35,6 +33,7 @@ import { VoteController } from './module/vote/vote.controller';
         password: configService.get<string>('REDIS_PASSWORD'),
       })
     }),
+    VoteModule,
   ],
   controllers: [AppController,],
   providers: [AppService,

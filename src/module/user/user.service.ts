@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable} from '@nestjs/common';
-import { User } from './entity/user.entity';
+import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { updateUserDto } from './dto/updateUser.dto';
@@ -52,10 +52,10 @@ export class UserService {
     if(!userActive){
       throw new HttpException("ko tìm thấy tài khoản", HttpStatus.UNAUTHORIZED);
     }
-    const compare_pass = await bcrypt.compare(password,userActive.password)
-    if(!compare_pass){
-      throw new HttpException("Đăng nhập thất bại", HttpStatus.UNAUTHORIZED);
-    }
+    // const compare_pass = await bcrypt.compare(password,userActive.password)
+    // if(!compare_pass){
+    //   throw new HttpException("Đăng nhập thất bại", HttpStatus.UNAUTHORIZED);
+    // }
     return userActive;
   }
 
@@ -97,8 +97,8 @@ export class UserService {
       throw new Error(`thông tin tài khoản không chính xác`);
     }
 
-    const pw = await bcrypt.compare(Dto.password, user.password);
-    if(!pw){
+    const password = await bcrypt.compare(Dto.password, user.password);
+    if(!password){
       throw new Error('thông tin tài khoản không chính xác')
     }    
 

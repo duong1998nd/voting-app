@@ -1,9 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete,HttpCode,UsePipes,ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete,HttpCode,UsePipes,ValidationPipe, Query } from '@nestjs/common';
 import { PollService } from './poll.service';
 import { UpdatePollDto } from './dto/update-poll.dto';
 import { CreatePollDto } from './dto/create-new-poll.dto';
 import { Auth } from 'src/auth/auth.decorator';
 import { Role } from 'src/auth/roles/enum';
+import { skip, take } from 'rxjs';
+import { Roles } from 'src/auth/roles/decorator';
+import { ErrorResponse } from '../user/share/errorResponse';
 
 @Controller('poll')
 export class PollController {
@@ -18,14 +21,16 @@ export class PollController {
   }
 
   @Get('')
-  findAll() {
-    return this.pollService.findAll();
+  findAll(@Query() {take, skip}) {
+    return this.pollService.findAll(take, skip);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.pollService.findOne(+id);
   }
+
+  
 
   @Auth(Role.ADMIN)
   @Patch(':id')
@@ -35,7 +40,16 @@ export class PollController {
 
   @Auth(Role.ADMIN)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pollService.remove(+id);
+  remove(@Param('id') id: string, userId: number) {
+    return this.pollService.deletePoll(+userId, +id);
+  }
+
+  @Post('/vote')
+  @Auth(Role.USER)
+  async vote(
+    @Param() userId: string,
+    @Param('itemId') itemId: number,
+  ){
+      return this.pollService.vote(itemId, userId);
   }
 }

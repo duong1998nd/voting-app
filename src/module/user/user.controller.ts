@@ -12,7 +12,7 @@ import { RolesGuard } from 'src/auth/roles/guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Auth } from 'src/auth/auth.decorator';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from './entity/user.entity';
+import { User } from './entities/user.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Controller('user')
