@@ -113,6 +113,7 @@ export class PollService {
   // findAll(): Promise<Poll[]> {
   //   return this.pollsRepository.find();
   // }
+  
   async findAll(take: number, skip: number): Promise<Poll[]> {
     console.log(take, skip)
     return this.pollsRepository
@@ -121,9 +122,8 @@ export class PollService {
       .orderBy('poll.name', 'ASC')
       .take(take)
       .skip(skip)
-      .getMany();
-      
-  }
+      .getMany() 
+}
 
   async findOne(id: number): Promise<Poll> {
     console.log(id);

@@ -3,10 +3,12 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { join } from 'path';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  
+  app.use(cookieParser);
+
   const config = new DocumentBuilder()
     .setTitle('voting_app')
     .setDescription('voting-app description')
@@ -21,6 +23,7 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('ejs');
+  
   await app.listen(3000, function(){
     console.log('may chu : http://localhost:3000')
   });

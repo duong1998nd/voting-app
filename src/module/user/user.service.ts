@@ -37,10 +37,13 @@ export class UserService {
     return await this.UserRepo.findBy({id:+id});
   }
 
-  async getUserById(id: any): Promise<User> {
+  async getUserById(id: number): Promise<User> {
     const User = await this.UserRepo.findOne({ where: { id: id } });
-    delete User.password;
-    return User;
+    if(User) {
+      delete User.password;
+      return User;
+    } 
+    throw new HttpException('Không tồn tại người dùng này', HttpStatus.NOT_FOUND)  
   }
 
 
@@ -52,11 +55,19 @@ export class UserService {
     if(!userActive){
       throw new HttpException("ko tìm thấy tài khoản", HttpStatus.UNAUTHORIZED);
     }
-    // const compare_pass = await bcrypt.compare(password,userActive.password)
-    // if(!compare_pass){
-    //   throw new HttpException("Đăng nhập thất bại", HttpStatus.UNAUTHORIZED);
-    // }
+    const compare_pass = await bcrypt.compare(password,userActive.password)
+    if(!compare_pass){
+      throw new HttpException("Đăng nhập thất bại", HttpStatus.UNAUTHORIZED);
+    }
     return userActive;
+  }
+
+  async findEmail(email: string): Promise<User> {
+    return await this.UserRepo.findOne({
+      where: {
+        email: email,
+      },
+    });
   }
 
   // async findOneByEmail(email: string): Promise<User_infor | undefined> {
