@@ -22,7 +22,7 @@ export class PollController {
 
   @Get('')
   findAll(@Query() {take, skip}) {
-    return this.pollService.findAll(take, skip);
+    return this.pollService.findAll(take, skip).then((result) => result ? {views : result} : {views : []});;
   }
 
   @Get(':id')

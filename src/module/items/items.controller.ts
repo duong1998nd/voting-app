@@ -12,14 +12,15 @@ export class ItemController {
 
 
   @Get()
+  @Render('item.ejs')
   findAll() {
-    return this.itemService.findAll();
+    return this.itemService.findAll().then((result) => result ? {views : result} : {views : []});
   }
   @Get('/create')
-    @Render('create-item.ejs')
-    rootsss() {
-      return { message: 'hello' };
-    }
+  @Render('create-item.ejs')
+  rootsss() {
+    return { message: 'hello' };
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -31,7 +32,7 @@ export class ItemController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: './uploads',
+        destination: './public/uploads',
         filename: (req, file, callback) => {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);

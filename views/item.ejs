@@ -10,11 +10,9 @@
                     <th>Id</th>
                     <th>Name</th>
                     <th>Hinh anh</th>
-                    <th>Email</th>
-                    <th>Địa chỉ</th>
+                    <th>age</th>
                     <th>phone</th>
-                    <th>Money</th>
-                   
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -32,17 +30,19 @@
                           
                         </td>
                         <td>
-                            <%= item.email %>
+                            <%= item.age %>
                         </td>
-                        <td>
-                            <%= item.address %>
-                        </td>
+                      
                         <td>
                             <%= item.phone %>
                         </td>
                         
                         <td>
-                            <%= item.money %>
+                            <a onclick="return confirm('Chắc chưa?')" href="/delete-product/<%= item.id %>"
+                                class="btn btn-danger">Xóa</a>
+
+                                <a  href="/edit-product/<%= item.id %>"
+                                    class="btn btn-primary">Sửa</a>
                         </td>
                         
                     </tr>
