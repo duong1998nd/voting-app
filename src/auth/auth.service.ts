@@ -52,12 +52,10 @@ export class AuthService {
     }
 
     async login(user: AuthLoginDto){
-        const users = await this.userService.findByEmail(user);
-        console.log(users)
+        const users = await this.userService.findByEmail(user.email, user.password);
         const email = users.email;
-        const accesstoken = this.jwtService.sign({email});
-        console.log(accesstoken)
-        return `Authentication=${accesstoken}; HttpOnly; Path=/; Max-Age=${this.configService.get('EXPRIRESIN')}`
+        const access_token = this.jwtService.sign({email});
+        return `Authentication=${access_token}; HttpOnly; Path=/; Max-Age=${this.configService.get('EXPRIRESIN')}`
     }
     
     // private _createToken({email}):any {

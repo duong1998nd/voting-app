@@ -59,16 +59,17 @@ export class UserService {
   }
 
 
-  async findByEmail({ email, password }: AuthLoginDto) {
+  async findByEmail(email: string, password: string) {
     const userActive = await this.UserRepo.findOne({
       where: { email: email }
     });
-
+    console.log(userActive)
     if (!userActive) {
       throw new HttpException("ko tìm thấy tài khoản", HttpStatus.UNAUTHORIZED);
     }
-    const compare_pass = await bcrypt.compare(password, userActive.password)
-    if (!compare_pass) {
+    const isMatch  = await bcrypt.compare(password, userActive.password)
+    console.log(password, userActive.password)
+    if (!isMatch ) {
       throw new HttpException("Đăng nhập thất bại", HttpStatus.UNAUTHORIZED);
     }
     return userActive;
@@ -110,24 +111,24 @@ export class UserService {
     return await this.UserRepo.update(+id, userUpdateDto);
   }
 
-  async login(Dto: loginUserDto) {
-    const user = await this.UserRepo.findOne({
-      where: {
-        email: Dto.email,
-      }
-    });
-    if (!user) {
-      throw new Error(`thông tin tài khoản không chính xác`);
-    }
+  // async login(Dto: loginUserDto) {
+  //   const user = await this.UserRepo.findOne({
+  //     where: {
+  //       email: Dto.email,
+  //     }
+  //   });
+  //   if (!user) {
+  //     throw new Error(`thông tin tài khoản không chính xác`);
+  //   }
 
-    const password = await bcrypt.compare(Dto.password, user.password);
-    if (!password) {
-      throw new Error('thông tin tài khoản không chính xác')
-    }
+  //   const password = await bcrypt.compare(Dto.password, user.password);
+  //   if (!password) {
+  //     throw new Error('thông tin tài khoản không chính xác')
+  //   }
 
-    delete user.password;
-    return user;
-  }
+  //   delete user.password;
+  //   return user;
+  // }
 
   vote(voteQtt: number, itemId, getUser) {
     if (voteQtt < 1) {

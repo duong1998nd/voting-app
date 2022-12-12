@@ -36,23 +36,16 @@ export class AppController {
 
   @Get('log-in')
   @Render('login.ejs')
-  async logInUser(@Req() request: RequestWithUser, @Res() response: Response) {
-    console.log(request.cookies)
-    const cookies = this.authService.login(request.body);
-    response.setHeader('Set-Cookie', await cookies);
-    request.body.password = undefined;
-    return {}
-  }
-
+  async logInUser() {}
 
   @HttpCode(200)
   @UseGuards(JwtStrategy)
   @Post('log-in')
-  @Redirect('/')
+  @Render('home.ejs')
   async logIn(@Req() request: RequestWithUser, @Res() response: Response) {
-    console.log(request.cookies)
-    const cookies = this.authService.login(request.body);
-    response.setHeader('Set-Cookie', await cookies);
+    const cookie = this.authService.login(request.body);
+    response.setHeader('Set-Cookie', await cookie);
+    console.log(request.body)
     request.body.password = undefined;
     return {}
   }

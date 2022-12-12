@@ -10,8 +10,9 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors({
     origin: 'https://localhost:3000',
+    methods: ["GET", "POST"],
     credentials: true,
-  })
+  });
   
   const config = new DocumentBuilder()
     .setTitle('voting_app')
@@ -29,7 +30,7 @@ async function bootstrap() {
   app.setViewEngine('ejs');
   
   await app.listen(3000, function(){
-    console.log('may chu : http://localhost:3000')
+    console.log('máy chủ : http://localhost:3000')
   });
   
 }
