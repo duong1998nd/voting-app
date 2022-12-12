@@ -14,6 +14,8 @@ import { Auth } from 'src/auth/auth.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { UserDecorator } from './decorator';
+
 
 @Controller('user')
 export class UserController {
@@ -68,13 +70,12 @@ export class UserController {
        
         return this.userService.create(createUserDto);
     }
+
     
     @Post('/create')
     @HttpCode(200)
-    @UsePipes(ValidationPipe)
-   
+    @UsePipes(ValidationPipe)  
     async register(@Body() UserCreate: createUserDto){
-     
       return this.userService.create(UserCreate)
     }
 
@@ -89,8 +90,13 @@ export class UserController {
         return this.userService.update(+id, updateUserDto);
     }
 
-    @Post('/login')
-    login(@Body() info:loginUserDto){
-        return this.userService.login(info)
+    @Auth(Role.USER)
+    @Get('vote/:itemId/')
+    vote(
+      @Param('voteQtt') voteQtt: number,
+      @Param('itemId') itemId: number,
+      @UserDecorator() getUser,
+    ) {
+      return this.userService.vote(voteQtt,itemId,getUser)
     }
 }

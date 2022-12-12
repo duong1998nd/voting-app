@@ -11,6 +11,8 @@ import { AuthModule } from './auth/auth.module';
 import { VoteModule } from './module/vote/vote.module';
 
 import * as redisStore from 'cache-manager-redis-store';
+// import { LocalStrategy } from './auth/local.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 
 
@@ -34,6 +36,7 @@ import * as redisStore from 'cache-manager-redis-store';
       })
     }),
     VoteModule,
+    PassportModule
   ],
   controllers: [AppController,],
   providers: [AppService,

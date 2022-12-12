@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import { CACHE_MANAGER, HttpException, HttpStatus, Inject, Injectable} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { createUserDto } from 'src/module/user/dto/createUser.dto';
 import { User } from 'src/module/user/entities/user.entity';
@@ -6,13 +6,16 @@ import { UserService } from 'src/module/user/user.service';
 import { AuthLoginDto } from "./auth-login.dto";
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import {Cache} from 'cache-manager';
 
 @Injectable()
 export class AuthService {
     constructor(
         private userService: UserService,
         private jwtService: JwtService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        @Inject(CACHE_MANAGER) 
+        private cacheManager: Cache
     ) { }
 
     public async getAuthenticatedUser(email: string, hashedPassword: string) {
@@ -35,7 +38,7 @@ export class AuthService {
     async register (userDto: createUserDto){
         const user = await this.userService.create(userDto);
         return {
-            user:user.name,
+            username:user.name,
             email:user.email,
         }
     }
@@ -43,19 +46,20 @@ export class AuthService {
     async validateUser(email): Promise<User>{
         const user = await this.userService.findEmail(email);
         if (!user){
-            throw new HttpException('Email không đúng',HttpStatus.UNAUTHORIZED);
+            throw new HttpException('Email không tồn tại',HttpStatus.UNAUTHORIZED);
         }
         return user;
     }
 
     async login(user: AuthLoginDto){
         const users = await this.userService.findByEmail(user);
+        console.log(users)
         const email = users.email;
         const accesstoken = this.jwtService.sign({email});
-
+        console.log(accesstoken)
         return `Authentication=${accesstoken}; HttpOnly; Path=/; Max-Age=${this.configService.get('EXPRIRESIN')}`
     }
-
+    
     // private _createToken({email}):any {
     //     const accesstoken = this.jwtService.sign({email})
     //     return {

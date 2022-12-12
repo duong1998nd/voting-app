@@ -37,8 +37,8 @@ export class User extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   address: string;
 
-  @Column({ type: 'varchar', default: '0' })
-  money: string;
+  @Column({ default: () => 0 })
+  money: number;
 
   @OneToMany(()=> Vote, (vote) => vote.id)
   vote: Vote[];

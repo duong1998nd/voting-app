@@ -8,11 +8,13 @@ import { AuthService } from 'src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { MulterModule } from '@nestjs/platform-express';
 import { ItemModule } from '../items/items.module';
+import { VoteModule } from '../vote/vote.module';
 
 @Module({
     imports: [MulterModule.register({ dest: './uploads' }),
     TypeOrmModule.forFeature([User]),
     ItemModule,
+    VoteModule,
     CacheModule.register()
     ],
     controllers: [UserController],

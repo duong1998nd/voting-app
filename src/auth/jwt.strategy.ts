@@ -10,6 +10,7 @@ import { UserService } from "src/module/user/user.service";
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(
         private readonly authService: AuthService,
+        private readonly userService: UserService,
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromExtractors([(request: Request) => {
@@ -20,15 +21,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         });
     }
 
+    // async validate({email}) {
+    //     const user = await this.authService.validateUser(email)
+    //     if(!user){
+    //         throw new HttpException("Invalid token", HttpStatus.UNAUTHORIZED)
+    //     }
+    //     return user;
+    // }
+
     async validate({email}) {
-        const user = await this.authService.validateUser(email)
-        if(!user){
+        const user = await this.authService.validateUser(email);
+        if(!user) {
             throw new HttpException("Invalid token", HttpStatus.UNAUTHORIZED)
         }
         return user;
-    }
-
-    // async validate(payload: TokenPayload) {
-    //     return this.userService.getById(payload.userId);
-    //   }
+      }
 }

@@ -41,8 +41,8 @@ export class Item {
     @OneToMany(() => Vote, vote => vote.item)
     votes: Vote[];
 
-    // @ManyToOne(() => Poll, poll => poll.item, { onDelete: 'CASCADE' })
-    // poll: Promise<Poll>;
+    @Column({default: () => 0 })
+    voteQtt: number
     
     
     @Column({ type: 'datetime',   default: () => 'NOW()' })

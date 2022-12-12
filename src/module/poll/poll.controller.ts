@@ -30,7 +30,6 @@ export class PollController {
     return this.pollService.findOne(+id);
   }
 
-  
 
   @Auth(Role.ADMIN)
   @Patch(':id')
@@ -42,14 +41,5 @@ export class PollController {
   @Delete(':id')
   remove(@Param('id') id: string, userId: number) {
     return this.pollService.deletePoll(+userId, +id);
-  }
-
-  @Post('/vote')
-  @Auth(Role.USER)
-  async vote(
-    @Param() userId: string,
-    @Param('itemId') itemId: number,
-  ){
-      return this.pollService.vote(itemId, userId);
   }
 }

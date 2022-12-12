@@ -9,7 +9,7 @@ import { Item } from './entities/item.entity';
 export class ItemService {
   constructor(
     @InjectRepository(Item)
-    private itemRepository: Repository<Item>
+    private itemRepository: Repository<Item>,
   ) {
   }
   create(createItemDto: CreateItemDto): Promise<Item> {
@@ -33,4 +33,24 @@ export class ItemService {
   remove(id: number) {
     return this.itemRepository.delete({ id });
   }
+
+  async vote(id:number){
+    const item = await this.itemRepository.findOne({where: {id}})
+    let vote = item.voteQtt ++
+    if(vote > 0 && vote == 1){
+      return await  this.itemRepository.save(item);
+    }else{
+      return 'không thành công'
+    }
+  }
+
+  async updateVote(voteQttupdate:any, itemId:number){
+    const voteQtt = await this.findOne(itemId)
+
+    const voteQttnew = voteQtt.voteQtt + parseInt(voteQttupdate)
+    return await this.itemRepository.update(itemId,{
+      voteQtt: voteQttnew
+    })
+  }
+
 }

@@ -28,7 +28,6 @@ export class ItemController {
 
   @Post('/create')
   @HttpCode(200) 
-  
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -48,6 +47,7 @@ export class ItemController {
     console.log(createitemDto)
     return this.itemService.create(createitemDto);
   }
+  
     
 
   @Patch(':id')

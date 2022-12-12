@@ -1,5 +1,7 @@
-import { Controller, Get, Post, UseGuards, Body, HttpCode,
-UsePipes, ValidationPipe, Render, Req, Res } from '@nestjs/common';
+import {
+  Controller, Get, Post, UseGuards, Body, HttpCode,
+  UsePipes, ValidationPipe, Render, Req, Res
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AppService } from './app.service';
 import { AuthLoginDto } from './auth/auth-login.dto';
@@ -13,6 +15,9 @@ import { RolesGuard } from './auth/roles/guard';
 import { createUserDto } from './module/user/dto/createUser.dto';
 import { UserService } from './module/user/user.service';
 import { Request, Response } from 'express';
+import RequestWithUser from './auth/requestWithUser.interface';
+import { request } from 'http';
+import { UserDecorator } from './module/user/decorator';
 
 
 @Controller()
@@ -21,37 +26,42 @@ export class AppController {
     private readonly appService: AppService,
     private authService: AuthService,
     private userService: UserService
-    ) {}
-    
-    @Roles(Role.USER)
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Get('/')
-    @Render('index.ejs')
-    rootsss() {
-      return { message: 'Hello world!' };
-    }
-    
-    @Get()
-    @Render('login')
-    async loginUser() {
-      return { message: 'hello' }; 
-    }
+  ) { }
 
-    @HttpCode(200)
-    @UseGuards(JwtStrategy)
-    @Post('login')
-    async login(@Req() req: Request, @Res() res: Response) {
-      const cookie = this.authService.login(req.body);
-      console.log(cookie)
-      res.setHeader('Set-Cookie', await cookie);
-      req.body.password = undefined;
-      res.redirect('/index')
-    }
-  
-    @Post('register')
-    @HttpCode(200)
-    @UsePipes(ValidationPipe)
-    async createAdmin(@Body() userCreate: createUserDto){
-        return await this.userService.create(userCreate);
-    }
+  @Get('/')
+  @Render('index.ejs')
+  rootsss() {
+    return { message: 'Hello world!' };
+  }
+
+  @HttpCode(200)
+  @UseGuards(JwtStrategy)
+  @Post('log-in')
+  async logIn(@Req() request: RequestWithUser, @Res() response: Response) {
+    console.log(request.cookies)
+    const cookies = this.authService.login(request.body);
+    response.setHeader('Set-Cookie', await cookies);
+    request.body.password = undefined;
+    return response.redirect('/')
+  }
+
+  @Auth(Role.ADMIN)
+  @Get('profile')
+  async Info(@UserDecorator() user: any,@Res() res: Response) {
+    res.render('index',{
+      Info: user
+    })
+  }
+
+  @Post('register')
+  @HttpCode(200)
+  @UsePipes(ValidationPipe)
+  async createAdmin(@Body() userCreate: createUserDto) {
+    return await this.userService.create(userCreate);
+  }
+
+  @Get('logout')
+  async logout(){
+    return await this.authService.getCookieForLogOut()
+  }
 }

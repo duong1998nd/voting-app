@@ -7,8 +7,12 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.use(cookieParser);
-
+  app.use(cookieParser());
+  app.enableCors({
+    origin: 'https://localhost:3000',
+    credentials: true,
+  })
+  
   const config = new DocumentBuilder()
     .setTitle('voting_app')
     .setDescription('voting-app description')
