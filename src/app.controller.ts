@@ -1,6 +1,6 @@
 import {
   Controller, Get, Post, UseGuards, Body, HttpCode,
-  UsePipes, ValidationPipe, Render, Req, Res
+  UsePipes, ValidationPipe, Render, Req, Res, Redirect
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AppService } from './app.service';
@@ -34,15 +34,27 @@ export class AppController {
     return { message: 'Hello world!' };
   }
 
+  @Get('log-in')
+  @Render('login.ejs')
+  async logInUser(@Req() request: RequestWithUser, @Res() response: Response) {
+    console.log(request.cookies)
+    const cookies = this.authService.login(request.body);
+    response.setHeader('Set-Cookie', await cookies);
+    request.body.password = undefined;
+    return {}
+  }
+
+
   @HttpCode(200)
   @UseGuards(JwtStrategy)
   @Post('log-in')
+  @Redirect('/')
   async logIn(@Req() request: RequestWithUser, @Res() response: Response) {
     console.log(request.cookies)
     const cookies = this.authService.login(request.body);
     response.setHeader('Set-Cookie', await cookies);
     request.body.password = undefined;
-    return response.redirect('/')
+    return {}
   }
 
   @Auth(Role.ADMIN)
