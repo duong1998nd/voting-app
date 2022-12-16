@@ -27,7 +27,7 @@ export class AppController {
     private authService: AuthService,
     private userService: UserService
   ) { }
-
+  @Auth(Role.ADMIN)
   @Get('/')
   @Render('index.ejs')
   rootsss() {
@@ -41,7 +41,11 @@ export class AppController {
   @HttpCode(200)
   @UseGuards(JwtStrategy)
   @Post('log-in')
+<<<<<<< HEAD
   @Redirect('/')
+=======
+  @Render('index.ejs')
+>>>>>>> 368d89282842dce64cad08ad69ac670de51c6751
   async logIn(@Req() request: RequestWithUser, @Res() response: Response) {
     const cookie = this.authService.login(request.body);
     response.setHeader('Set-Cookie', await cookie);

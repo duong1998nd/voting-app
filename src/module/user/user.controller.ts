@@ -54,7 +54,7 @@ export class UserController {
     @UseInterceptors(
         FileInterceptor('image', {
           storage: diskStorage({
-            destination: './uploads',
+            destination: './public/uploads',
             filename: (req, file, callback) => {
               const uniqueSuffix =
                 Date.now() + '-' + Math.round(Math.random() * 1e9);
