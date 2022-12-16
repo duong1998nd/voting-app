@@ -24,16 +24,17 @@ export class UserController {
 
     @Auth(Role.ADMIN)
     @Get('/')
+    @UseInterceptors(CacheInterceptor)
     getUsers(
       @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
       @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 5,
     ): Promise<Pagination<User>>  {
       limit = limit > 100 ? 100 : limit;
-
-        return this.userService.paginate({
-          page,
-          limit
-        });
+      console.log("cache:", 'run' )
+      return this.userService.paginate({
+        page,
+        limit
+      });
     }
 
     //get by id 
@@ -91,12 +92,18 @@ export class UserController {
     }
 
     @Auth(Role.USER)
-    @Get('vote/:itemId/')
+    @Post('vote/:voteUserId/:itemId/')
     vote(
-      @Param('voteQtt') voteQtt: number,
       @Param('itemId') itemId: number,
-      @UserDecorator() getUser,
+      @Param('voteUserId') voteUserId: number,
     ) {
-      return this.userService.vote(voteQtt,itemId,getUser)
+      return this.userService.vote(voteUserId,itemId)
+    }
+
+    @Auth(Role.ADMIN)
+    @Post('/addMoney/:id/:amount')
+    addMoney(@Param('id') id: number,@Body() amount: number): Promise<User> {
+      console.log("amount: ", amount)
+      return this.userService.addMoney(id, amount)
     }
 }

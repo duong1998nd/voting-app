@@ -44,12 +44,14 @@ export class ItemService {
     }
   }
 
-  async updateVote(voteQttupdate:any, itemId:number){
-    const voteQtt = await this.findOne(itemId)
-
-    const voteQttnew = voteQtt.voteQtt + parseInt(voteQttupdate)
+  async updateVote(userId: number,itemId:number){
+    const item = await this.itemRepository.findOne({where: {
+      id: itemId
+    }})
+    const voteQtt=item.voteQtt+= 1;
+    console.log("id:", itemId)
     return await this.itemRepository.update(itemId,{
-      voteQtt: voteQttnew
+      voteQtt: voteQtt
     })
   }
 

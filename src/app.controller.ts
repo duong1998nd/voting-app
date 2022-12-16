@@ -41,7 +41,7 @@ export class AppController {
   @HttpCode(200)
   @UseGuards(JwtStrategy)
   @Post('log-in')
-  @Render('home.ejs')
+  @Redirect('/')
   async logIn(@Req() request: RequestWithUser, @Res() response: Response) {
     const cookie = this.authService.login(request.body);
     response.setHeader('Set-Cookie', await cookie);
@@ -65,7 +65,7 @@ export class AppController {
     return await this.userService.create(userCreate);
   }
 
-  @Get('logout')
+  @Get('log-out')
   async logout(){
     return await this.authService.getCookieForLogOut()
   }

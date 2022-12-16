@@ -16,8 +16,8 @@ export class Item {
     @Column()
     age: number
 
-    @Column({ type: 'text'})
-    content: string
+    @Column('text')
+    text: string
 
     @Column({ type: 'varchar'})
     address: string

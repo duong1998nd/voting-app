@@ -12,6 +12,7 @@ import { errorMessage } from '../user/share/errorMessage';
 import { redis } from 'src/redis';
 import { Item } from '../items/entities/item.entity';
 import { Vote } from '../vote/entities/vote.entity';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 
 @Injectable()  
 export class PollService {
@@ -26,7 +27,10 @@ export class PollService {
     private readonly voteRepository: Repository<Vote>,
 
     private schedulerRegistry: SchedulerRegistry,
-  ) {}
+  ) {
+   
+  }
+
   // create(createPollDto: CreatePollDto): Promise<Poll> {
   //   return this.pollsRepository.save(createPollDto);
   // }
@@ -35,9 +39,16 @@ export class PollService {
   //       .getRepository(Poll)
   //       .createQueryBuilder()
   // }
+
   private readonly logger = new Logger(PollService.name);
-    async create(createPollDto: CreatePollDto): Promise<Poll> {
-    
+
+  
+    async create(createPollDto: CreatePollDto): Promise<Poll | ErrorResponse[]> {
+      console.log(createPollDto.start)
+      if (new Date(createPollDto.start).getDate() >= new Date(createPollDto.end).getDate()) {
+        return errorMessage("error", 'ngày bắt đầu phải trước ngày kết thúc');
+      }
+      
     const job_start = new CronJob(new Date(createPollDto.start), () => {
       this.logger.warn(`Cuộc bình chọn ${createPollDto.name} sẽ bắt đầu lúc (${new Date(createPollDto.start)})!`);      
     });  
@@ -59,11 +70,10 @@ export class PollService {
 
     await this.logger.warn(
       `job ${createPollDto.name} stoped for each minute at ${new Date(createPollDto.end)} seconds!`,
-
     );
 
     const jobs = this.schedulerRegistry.getCronJobs();
-     jobs.forEach((value, key, map) => {
+     jobs.forEach((value, key, _map) => {
         let next;
         try {
           next = value.nextDates().toJSDate();
@@ -72,7 +82,8 @@ export class PollService {
         }
         this.logger.log(`job: ${key} -> next: ${next}`);
       });
-    return this.pollsRepository.save(createPollDto);
+     await this.pollsRepository.save(createPollDto);
+
   }
 
 
@@ -93,7 +104,7 @@ export class PollService {
 
     const voted = await redis.sismember(
       `${itemId}${item.pollId}`,
-      userId,
+        userId,
     );
     if (voted) {
       return false;
@@ -114,16 +125,12 @@ export class PollService {
   //   return this.pollsRepository.find();
   // }
   
-  async findAll(take: number, skip: number): Promise<Poll[]> {
-    console.log(take, skip)
-    return this.pollsRepository
-      .createQueryBuilder('poll')
-      .innerJoinAndSelect('poll.item', 'item')
-      .orderBy('poll.name', 'ASC')
-      .take(take)
-      .skip(skip)
-      .getMany() 
-}
+  async paginate(options: IPaginationOptions): Promise<Pagination<Poll>> {
+  const queryBuilder = this.pollsRepository.createQueryBuilder('c');
+  queryBuilder.orderBy('c.name', 'DESC'); // orderBy name 
+
+  return paginate<Poll>(queryBuilder, options);
+  }
 
   async findOne(id: number): Promise<Poll> {
     console.log(id);
@@ -143,11 +150,12 @@ export class PollService {
   // remove(id: number): Promise<DeleteResult>{
   //   return this.pollsRepository.delete(id);
   // }
-  async deletePoll(userId: number, id: number): Promise<Boolean> {
+  
+  async deletePoll(id: number): Promise<Boolean> {
     try {
       await this.pollsRepository.delete({ id });
 
-      await redis.srem(`${Item}${id}`, userId);
+      await redis.srem(`${Item}${id}`);    
     } catch (err) {
       return false;
     }

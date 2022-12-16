@@ -9,6 +9,6 @@ import { ItemService } from './items.service';
 ],
   controllers: [ItemController],
   providers: [ItemService],
-  exports: [ItemService]
+  exports: [ItemService, TypeOrmModule]
 })
 export class ItemModule {}

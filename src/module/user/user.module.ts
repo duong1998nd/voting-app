@@ -9,13 +9,14 @@ import { JwtService } from '@nestjs/jwt';
 import { MulterModule } from '@nestjs/platform-express';
 import { ItemModule } from '../items/items.module';
 import { VoteModule } from '../vote/vote.module';
+import { Item } from '../items/entities/item.entity';
 
 @Module({
     imports: [MulterModule.register({ dest: './uploads' }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Item]),
     ItemModule,
     VoteModule,
-    CacheModule.register()
+    CacheModule.register(),
     ],
     controllers: [UserController],
     providers: [UserService, JwtStrategy, AuthService, JwtService],

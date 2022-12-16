@@ -4,15 +4,21 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
+import { ConfigService } from '@nestjs/config';
+import { SocketIOAdapter } from './socket-io-adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(cookieParser());
+  const configService = app.get(ConfigService);
+  const port = parseInt(configService.get('PORT'));
+  const clientPort = parseInt(configService.get('CLIENT_PORT'));
   app.enableCors({
-    origin: 'https://localhost:3000',
+    origin: `https://localhost:${clientPort}`,
     methods: ["GET", "POST"],
     credentials: true,
   });
+  app.useWebSocketAdapter(new SocketIOAdapter(app, configService));
   
   const config = new DocumentBuilder()
     .setTitle('voting_app')
@@ -30,7 +36,7 @@ async function bootstrap() {
   app.setViewEngine('ejs');
   
   await app.listen(3000, function(){
-    console.log('máy chủ : http://localhost:3000')
+    console.log(`máy chủ : http://localhost:${port}`)
   });
   
 }

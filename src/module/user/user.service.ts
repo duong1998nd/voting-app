@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Param, ParseIntPipe } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Param, ParseIntPipe, Req } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -24,6 +24,8 @@ export class UserService {
     @InjectRepository(User)
     private readonly UserRepo: Repository<User>,
     private readonly itemService: ItemService,
+    @InjectRepository(Item)
+    private itemRepository: Repository<Item>,
   ) { }
 
   // async getId(){
@@ -98,7 +100,6 @@ export class UserService {
       return user_bcrypt;
     } catch (error) {
       console.log(error);
-
       throw new Error('Nhập đẩy đủ thông tin');
     }
   }
@@ -111,47 +112,56 @@ export class UserService {
     return await this.UserRepo.update(+id, userUpdateDto);
   }
 
-  // async login(Dto: loginUserDto) {
-  //   const user = await this.UserRepo.findOne({
-  //     where: {
-  //       email: Dto.email,
-  //     }
-  //   });
-  //   if (!user) {
-  //     throw new Error(`thông tin tài khoản không chính xác`);
-  //   }
-
-  //   const password = await bcrypt.compare(Dto.password, user.password);
-  //   if (!password) {
-  //     throw new Error('thông tin tài khoản không chính xác')
-  //   }
-
-  //   delete user.password;
-  //   return user;
-  // }
-
-  vote(voteQtt: number, itemId, getUser) {
+  async vote(itemId: number, userId: number) {
+    const item = await this.itemRepository.findOne({
+      where: {id: itemId}
+    })
+    
+    const user = await this.UserRepo.findOne({
+      where: {id: userId}
+    })
+    const voteUserId = user.id
+    console.log("voteUserId", voteUserId)
+    const voteQtt = item.voteQtt += 1;
+    console.log("voteQtt", voteQtt)
+    
     if (voteQtt < 1) {
-      this.itemService.updateVote(voteQtt, itemId);
+      this.itemService.updateVote(voteUserId, itemId);
     } else {
       let fee = 1;
       // lần sau gấp đôi lần trước
       let voteFee = fee * 2^voteQtt;
-      console.log(getUser.money)
-      let moneyLeft = getUser.money - voteFee;
-      if (getUser.money < voteFee) {
+      let moneyLeft = user.money - voteFee;
+      if (user.money < voteFee) {
+        console.log("moneyLeft:", moneyLeft)
         return {
           message: 'ko đủ tiền'
-        }
+        } 
       } else {
-        this.UserRepo.update(getUser.id, {
+        this.UserRepo.update(voteUserId, {
           money: moneyLeft,
         });
-        this.itemService.updateVote(voteQtt, itemId);
-        // this.voteService.createHistoryVote(getUser.id, itemId, voteQtt)
+        this.itemService.updateVote(voteUserId,itemId);
       }
     }
+  }
 
 
+  async addMoney(id: number,amount: number): Promise<User> {
+    const user = await this.UserRepo.findOne({where: {
+      id: id
+    }})
+    console.log("User:", user)
+    const userMoney = user.money
+    console.log("userMoney:",userMoney)
+    
+    const money =userMoney + amount
+    console.log("Amount:", amount)
+    console.log("Money:", money)
+
+    await this.UserRepo.update(id, {
+      money : money,
+    }) 
+    return user
   }
 }

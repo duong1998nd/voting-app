@@ -10,14 +10,17 @@ export class Poll {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column()
+  @Column({type: 'datetime'})
   start: Date;
   
-  @Column()
+  @Column({type: 'datetime'})
   end: Date; 
 
   @Column()
   userId: number;
+
+  @Column({default: 0})
+  status: boolean;
 
   @Column({ type: 'datetime',   default: () => 'NOW()' })
   created_at: Date; 

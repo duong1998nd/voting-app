@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete,HttpCode,UsePipes,ValidationPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete,HttpCode,UsePipes,ValidationPipe, Query, DefaultValuePipe, ParseIntPipe } from '@nestjs/common';
 import { PollService } from './poll.service';
 import { UpdatePollDto } from './dto/update-poll.dto';
 import { CreatePollDto } from './dto/create-new-poll.dto';
@@ -7,13 +7,15 @@ import { Role } from 'src/auth/roles/enum';
 import { skip, take } from 'rxjs';
 import { Roles } from 'src/auth/roles/decorator';
 import { ErrorResponse } from '../user/share/errorResponse';
+import { Poll } from './entities/poll.entity';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Controller('poll')
 export class PollController {
   constructor(private readonly pollService: PollService) {}
 
   @Auth(Role.ADMIN)
-  @Post()
+  @Post('/create')
   @HttpCode(200) 
   @UsePipes(ValidationPipe)
   create(@Body() createPollDto: CreatePollDto) {
@@ -21,8 +23,15 @@ export class PollController {
   }
 
   @Get('')
-  findAll(@Query() {take, skip}) {
-    return this.pollService.findAll(take, skip);
+  findAll(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(4), ParseIntPipe) limit: number = 5): Promise<Pagination<Poll>> {
+
+      limit = limit > 100 ? 100 : limit;
+      return this.pollService.paginate({
+        page,
+        limit
+      });
   }
 
   @Get(':id')
@@ -39,7 +48,7 @@ export class PollController {
 
   @Auth(Role.ADMIN)
   @Delete(':id')
-  remove(@Param('id') id: string, userId: number) {
-    return this.pollService.deletePoll(+userId, +id);
+  remove(@Param('id') id: string) {
+    return this.pollService.deletePoll(+id);
   }
 }

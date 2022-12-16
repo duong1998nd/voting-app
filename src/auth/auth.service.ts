@@ -55,6 +55,7 @@ export class AuthService {
         const users = await this.userService.findByEmail(user.email, user.password);
         const email = users.email;
         const access_token = this.jwtService.sign({email});
+        console.log(access_token)
         return `Authentication=${access_token}; HttpOnly; Path=/; Max-Age=${this.configService.get('EXPRIRESIN')}`
     }
     

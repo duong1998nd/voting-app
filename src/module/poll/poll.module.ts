@@ -8,11 +8,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Poll } from './entities/poll.entity';
 import { Item } from '../items/entities/item.entity';
 import { Vote } from '../vote/entities/vote.entity';
+import { PollGateway } from './poll.gateway';
 @Module({
   imports: [TypeOrmModule.forFeature([Poll, Item, Vote]),
     ScheduleModule.forRoot(),
   ],
   controllers: [PollController],
-  providers: [PollService]
+  providers: [PollService, PollGateway]
 })
 export class PollModule {}
