@@ -163,7 +163,7 @@ export class PollService {
   }
 
   async myPoll(userId: number): Promise<Poll[]> {
-    return await this.pollsRepository.find({ where: { userId } });
+    return await this.pollsRepository.find({ where: { } });
   }
 }
 

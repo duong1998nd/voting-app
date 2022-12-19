@@ -112,21 +112,17 @@ export class UserService {
     return await this.UserRepo.update(+id, userUpdateDto);
   }
 
-  async vote(itemId: number, userId: number) {
+  async vote(itemId: number, qtt: number, user) {
+
     const item = await this.itemRepository.findOne({
       where: {id: itemId}
     })
     
-    const user = await this.UserRepo.findOne({
-      where: {id: userId}
-    })
-    const voteUserId = user.id
-    console.log("voteUserId", voteUserId)
-    const voteQtt = item.voteQtt += 1;
+        const voteQtt = item.voteQtt += 1;
     console.log("voteQtt", voteQtt)
     
     if (voteQtt < 1) {
-      this.itemService.updateVote(voteUserId, itemId);
+      this.itemService.updateVote(qtt, itemId);
     } else {
       let fee = 1;
       // lần sau gấp đôi lần trước
@@ -138,22 +134,22 @@ export class UserService {
           message: 'ko đủ tiền'
         } 
       } else {
-        this.UserRepo.update(voteUserId, {
+        this.UserRepo.update(qtt, {
           money: moneyLeft,
         });
-        this.itemService.updateVote(voteUserId,itemId);
+        this.itemService.updateVote(qtt,itemId);
       }
     }
   }
 
 
-  async addMoney(id: number,amount: number): Promise<User> {
+  async addMoney(id: number,amount: number){
     const user = await this.UserRepo.findOne({where: {
       id: id
     }})
     console.log("User:", user)
     const userMoney = user.money
-    console.log("userMoney:",userMoney)
+    console.log("userMoney:", userMoney)
     
     const money =userMoney + amount
     console.log("Amount:", amount)
@@ -161,7 +157,7 @@ export class UserService {
 
     await this.UserRepo.update(id, {
       money : money,
-    }) 
+    })
     return user
   }
 }

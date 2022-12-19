@@ -4,6 +4,9 @@ export const UserDecorator = createParamDecorator(
   (data: string, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     const user = request.user;
+
+    console.log(user.name);
+    
     return data ? user?.[data] : user;
   },
 );

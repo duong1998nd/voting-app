@@ -1,12 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete,HttpCode,UsePipes,ValidationPipe, Query, DefaultValuePipe, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete,HttpCode,UsePipes,ValidationPipe, Query, DefaultValuePipe, ParseIntPipe, UseInterceptors, CacheInterceptor } from '@nestjs/common';
 import { PollService } from './poll.service';
 import { UpdatePollDto } from './dto/update-poll.dto';
 import { CreatePollDto } from './dto/create-new-poll.dto';
 import { Auth } from 'src/auth/auth.decorator';
 import { Role } from 'src/auth/roles/enum';
-import { skip, take } from 'rxjs';
 import { Roles } from 'src/auth/roles/decorator';
-import { ErrorResponse } from '../user/share/errorResponse';
 import { Poll } from './entities/poll.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 
@@ -23,11 +21,13 @@ export class PollController {
   }
 
   @Get('')
+  @UseInterceptors(CacheInterceptor)
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(4), ParseIntPipe) limit: number = 5): Promise<Pagination<Poll>> {
 
       limit = limit > 100 ? 100 : limit;
+      console.log("cache", 'run')
       return this.pollService.paginate({
         page,
         limit

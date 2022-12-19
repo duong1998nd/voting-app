@@ -1,6 +1,6 @@
 import {
   Controller, Get, Post, UseGuards, Body, HttpCode,
-  UsePipes, ValidationPipe, Render, Req, Res, Redirect
+  UsePipes, ValidationPipe, Render, Req, Res, Redirect, Param, 
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AppService } from './app.service';
@@ -18,6 +18,7 @@ import { Request, Response } from 'express';
 import RequestWithUser from './auth/requestWithUser.interface';
 import { request } from 'http';
 import { UserDecorator } from './module/user/decorator';
+import { send } from 'process';
 
 
 @Controller()
@@ -27,11 +28,11 @@ export class AppController {
     private authService: AuthService,
     private userService: UserService
   ) { }
-  @Auth(Role.ADMIN)
+  
   @Get('/')
-  @Render('index.ejs')
-  rootsss() {
-    return { message: 'Hello world!' };
+  @Render('index')
+  async homePage(@UserDecorator() user: any,@Req() req: Request) {
+    
   }
 
   @Get('log-in')
@@ -41,24 +42,26 @@ export class AppController {
   @HttpCode(200)
   @UseGuards(JwtStrategy)
   @Post('log-in')
-<<<<<<< HEAD
-  @Redirect('/')
-=======
-  @Render('index.ejs')
->>>>>>> 368d89282842dce64cad08ad69ac670de51c6751
-  async logIn(@Req() request: RequestWithUser, @Res() response: Response) {
-    const cookie = this.authService.login(request.body);
+  @Redirect('/profile')
+  async logIn(@Req() req: Request, @Res() response: Response) {
+    const cookie = this.authService.login(req.body);
     response.setHeader('Set-Cookie', await cookie);
-    console.log(request.body)
-    request.body.password = undefined;
+    req.body.password = undefined;
     return {}
   }
 
   @Auth(Role.ADMIN)
   @Get('profile')
-  async Info(@UserDecorator() user: any,@Res() res: Response) {
-    res.render('index',{
-      Info: user
+  @Render('index')
+  async Info(@UserDecorator() user: any) {
+   return { name: user.name}
+  }
+
+  @Auth(Role.USER, Role.ADMIN)
+  @Get('api/profile')
+  async ApiInfo(@UserDecorator() user: any,@Res() res: Response) {
+    res.send({
+      user: user,
     })
   }
 

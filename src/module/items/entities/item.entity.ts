@@ -17,18 +17,15 @@ export class Item {
     age: number
 
     @Column('text')
-    text: string
+    description: string
 
     @Column({ type: 'varchar'})
     address: string
 
-    @Column({ type: 'text', nullable: true})
-    other: string
-
     @Column({unique: true})
     phone: number
 
-    @Column({ type: 'tinyint'})
+    @Column({ type: 'tinyint', default: 0})
     status: number
 
     @Column()

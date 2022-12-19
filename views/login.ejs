@@ -1,72 +1,193 @@
-
 <!DOCTYPE html>
-<!--
-This is a starter template page. Use this page to start your new project from
-scratch. This page gets rid of all links and provides the needed markup only.
--->
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE 3 | Starter</title>
+<html lang="en" dir="ltr">
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description"
+    content="Electronic voting (often referred to as e-voting) is a type of voting that makes use of electronic devices to help or take care of the casting and counting of votes. E-voting may use freestanding electronic voting machines (also known as EVMs) or computers connected to the Internet, depending on the specific implementation.">
+  <meta name="keywords" content="evoting">
+  <meta name="author" content="e-Voting">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+  <title>Login</title>
+  <!-- Web Application Manifest -->
+  <link rel="manifest" href="https://evoting.mediacity.co.in/public/manifest.json">
+  <!-- Chrome for Android theme color -->
+  <meta name="theme-color" content="#000000">
+
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="PWA">
+  <link rel="icon" sizes="512x512" href="https://evoting.mediacity.co.in/public/images/icons/icon-512x512.png">
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="PWA">
+  <link rel="apple-touch-icon" href="https://evoting.mediacity.co.in/public/images/icons/icon-512x512.png">
+
+
+  <link href="https://evoting.mediacity.co.in/public/icons/splash-640x1136.png"
+    media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="https://evoting.mediacity.co.in/public/icons/splash-750x1334.png"
+    media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="https://evoting.mediacity.co.in/public/icons/splash-1242x2208.png"
+    media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)"
+    rel="apple-touch-startup-image" />
+  <link href="https://evoting.mediacity.co.in/public/icons/splash-1125x2436.png"
+    media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)"
+    rel="apple-touch-startup-image" />
+  <link href="https://evoting.mediacity.co.in/public/icons/splash-828x1792.png"
+    media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="https://evoting.mediacity.co.in/public/icons/splash-1242x2688.png"
+    media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)"
+    rel="apple-touch-startup-image" />
+  <link href="https://evoting.mediacity.co.in/public/icons/splash-1536x2048.png"
+    media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="https://evoting.mediacity.co.in/public/icons/splash-1668x2224.png"
+    media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="https://evoting.mediacity.co.in/public/icons/splash-1668x2388.png"
+    media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+  <link href="https://evoting.mediacity.co.in/public/icons/splash-2048x2732.png"
+    media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image" />
+
+  <!-- Tile for Win8 -->
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="https://evoting.mediacity.co.in/public/images/icons/icon-512x512.png">
+
+  <script type="text/javascript">
+    // Initialize the service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/serviceworker.js', {
+        scope: '.'
+      }).then(function (registration) {
+        // Registration was successful
+        console.log('Laravel PWA: ServiceWorker registration successful with scope: ', registration.scope);
+      }, function (err) {
+        // registration failed :(
+        console.log('Laravel PWA: ServiceWorker registration failed: ', err);
+      });
+    }
+  </script> <!-- Fevicon -->
+  <link rel="shortcut icon" href="https://evoting.mediacity.co.in/public/assets/images/favicon.ico">
+  <!-- Start css -->
+  <link href="https://evoting.mediacity.co.in/public/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="https://evoting.mediacity.co.in/public/assets/css/icons.css" rel="stylesheet" type="text/css">
+  <!-- LTR -->
+  <link href="https://evoting.mediacity.co.in/public/assets/css/style.css" rel="stylesheet" type="text/css">
+
+  <!-- End css -->
 </head>
+
+<body class="vertical-layout">
+  <!-- Start Containerbar -->
+  <div id="containerbar" class="containerbar authenticate-bg">
+    <!-- Start Container -->
     <div class="container">
-       
-        <form action="log-in" method="post">
-            <section class="vh-100" style="background-color: #508bfc;">
-                <div class="container py-5 h-100">
-                  <div class="row d-flex justify-content-center align-items-center h-100">
-                    <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-                      <div class="card shadow-2-strong" style="border-radius: 1rem;">
-                        <div class="card-body p-5 text-center">
-              
-                          <h3 class="mb-5">Sign in</h3>
-                         
-              
-                          <div class="form-outline mb-4">
-                            <input type="text" name="email" class="form-control form-control-lg" placeholder="email"/>
-                            
-                          </div>          
-                          <div class="form-outline mb-4">
-                            <input  type="text" name="password" class="form-control form-control-lg" placeholder="password" />
-                            
-                          </div>
-              
-                          <!-- Checkbox -->
-                          <div class="form-check d-flex justify-content-start mb-4">
-                            <input class="form-check-input" type="checkbox" value="" id="form1Example3" />
-                            <label class="form-check-label" for="form1Example3"> Remember password </label>
-                          </div>
-              
-                          <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
-              
-                          <hr class="my-4">
-              
-                          <button class="btn btn-lg btn-block btn-primary" style="background-color: #dd4b39;"
-                            type="submit"><i class="fab fa-google me-2"></i> Sign in with google</button>
-                          <button class="btn btn-lg btn-block btn-primary mb-2" style="background-color: #3b5998;"
-                            type="submit"><i class="fab fa-facebook-f me-2"></i>Sign in with facebook</button>
-              
+      <div class="auth-box login-box">
+        <!-- Start row -->
+        <div class="row no-gutters align-items-center justify-content-center">
+          <!-- Start col -->
+          <div class="col-md-6 col-lg-5">
+            <!-- Start Auth Box -->
+            <div class="auth-box-right">
+              <div class="card">
+                <div class="card-body">
+
+
+                  <form action="log-in" method="POST">
+                    <input type="hidden" name="_token" value="">
+                    <div class="form-head">
+                      <a href="log-in" class="btn btn-primary">Nhóm 2</a>
+                    </div>
+                    <h4 class="text-primary my-4">Login</h4>
+                    <div class="form-group">
+                      <input name="email" type="text" class="form-control " id="email" placeholder="Enter email id here"
+                        value="" required autocomplete="email" autofocus>
+                    </div>
+                    <div class="form-group">
+                      <input type="password" class="form-control " id="password" name="password"
+                        placeholder="Enter Password here" required>
+                    </div>
+                    <div class="form-row mb-3">
+                      <div class="col-sm-6">
+                        <div class="custom-control custom-checkbox text-left">
+                          <input type="checkbox" class="custom-control-input" id="rememberme" name="remember">
+                          <label class="custom-control-label font-14" for="rememberme">Remember Me</label>
+                        </div>
+                      </div>
+                      <div class="col-sm-6">
+                        <div class="forgot-psw">
+                          <a id="forgot-psw" href="https://evoting.mediacity.co.in/public/password/reset"
+                            class="font-14">Forgot Your Password?</a>
                         </div>
                       </div>
                     </div>
+                    <button type="submit" class="btn btn-success btn-lg btn-block font-18">Log in</button>
+                  </form>
+                  <div class="login-or">
+                    <h6 class="text-muted">OR</h6>
                   </div>
+                  <div class="button-list text-center">
+                    <a href="https://evoting.mediacity.co.in/public/login/facebook"
+                      class="btn btn-primary-rgba font-18"><i class="mdi mdi-facebook mr-2"></i>Facebook</a>
+                    <a href="submit" class="btn btn-danger-rgba font-18"><i class="mdi mdi-google mr-2"></i>Google</a>
+                  </div>
+                  <p class="mb-0 mt-3">Don&#039;t have an account? <a href="user/create">Sign up</a></p>
+
+                  <ul class="float-right d-inline list-inline mb-0">
+                    <li class="list-inline-item">
+                      <div class="languagebar">
+                        <div class="dropdown">
+                          <a class="dropdown-toggle" href="#" role="button" id="languagelink" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"><span class="live-icon">En</span><span
+                              class="feather icon-chevron-down live-icon"></span></a>
+                          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="languagelink"
+                            x-placement="bottom-end">
+                            <a class="dropdown-item"
+                              href="https://evoting.mediacity.co.in/public/change-language?lang=ar">Ar</a>
+                            <a class="dropdown-item"
+                              href="https://evoting.mediacity.co.in/public/change-language?lang=en">En</a>
+                            <a class="dropdown-item"
+                              href="https://evoting.mediacity.co.in/public/change-language?lang=es">Es</a>
+                            <a class="dropdown-item"
+                              href="https://evoting.mediacity.co.in/public/change-language?lang=hi">Hi</a>
+
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+
                 </div>
-              </section>
-          
-          </form>
+              </div>
+            </div>
+            <!-- End Auth Box -->
+          </div>
+          <!-- End col -->
+        </div>
+        <!-- End row -->
+      </div>
     </div>
-    <script src="/plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap 4 -->
-    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- AdminLTE App -->
-    <script src="/dist/js/adminlte.min.js"></script>
-    </body>
-    </html>
+    <!-- End Container -->
+  </div>
+  <!-- End Containerbar -->
+  <!-- Start js -->
+  <script src="https://evoting.mediacity.co.in/public/assets/js/jquery.min.js"></script>
+  <script src="https://evoting.mediacity.co.in/public/assets/js/popper.min.js"></script>
+  <script src="https://evoting.mediacity.co.in/public/assets/js/bootstrap.min.js"></script>
+  <script src="https://evoting.mediacity.co.in/public/assets/js/modernizr.min.js"></script>
+  <script src="https://evoting.mediacity.co.in/public/assets/js/detect.js"></script>
+  <script src="https://evoting.mediacity.co.in/public/assets/js/jquery.slimscroll.js"></script>
+
+  <!-- End js -->
+</body>
+
+</html>

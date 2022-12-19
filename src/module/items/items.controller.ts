@@ -13,20 +13,21 @@ export class ItemController {
 
   @Get()
   @Render('item.ejs')
-  findAll() {
-    return this.itemService.findAll().then((result) => result ? {views : result} : {views : []});
+  async findAll() {
+    const result_1 = await this.itemService.findAll();
+    return result_1 ? { views: result_1 } : { views: [] };
   }
-  @Get('/create')
-  @Render('create-item.ejs')
-  rootsss() {
-    return { message: 'hello' };
-  }
-
+  
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.itemService.findOne(+id);
   }
-
+  
+  @Get('/create')
+  @Render('create-item.ejs')
+  rootsss() {
+    return {};
+  }
   @Post('/create')
   @HttpCode(200) 
   @UseInterceptors(

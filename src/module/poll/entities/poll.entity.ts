@@ -7,7 +7,7 @@ export class Poll {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', unique: true})
   name: string;
 
   @Column({type: 'datetime'})
@@ -15,9 +15,6 @@ export class Poll {
   
   @Column({type: 'datetime'})
   end: Date; 
-
-  @Column()
-  userId: number;
 
   @Column({default: 0})
   status: boolean;

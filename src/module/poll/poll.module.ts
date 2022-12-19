@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { PollService } from './poll.service';
 import { PollController } from './poll.controller';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -12,6 +12,7 @@ import { PollGateway } from './poll.gateway';
 @Module({
   imports: [TypeOrmModule.forFeature([Poll, Item, Vote]),
     ScheduleModule.forRoot(),
+    CacheModule.register(),
   ],
   controllers: [PollController],
   providers: [PollService, PollGateway]

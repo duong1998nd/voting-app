@@ -8,10 +8,13 @@ export class Vote {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
+    voteQtt: number;
+
     @ManyToOne(() => Item, Item => Item.votes)
     item: Item;
 
-    @OneToOne(() => User, User => User.id)
+    @ManyToOne(() => User, User => User.id)
     user: User;
 
 }

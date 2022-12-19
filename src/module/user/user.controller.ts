@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Delete, UsePipes, Param, ValidationPipe, Patch, UploadedFile, UseInterceptors, Render, UseGuards, CacheInterceptor, Query, DefaultValuePipe, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Delete, UsePipes, Param, ValidationPipe, Patch, UploadedFile, UseInterceptors, Render, UseGuards, CacheInterceptor, Query, DefaultValuePipe, ParseIntPipe, Res, Req } from '@nestjs/common';
 import { updateUserDto } from './dto/updateUser.dto';
 import { loginUserDto } from './dto/loginUser.dto';
 import { createUserDto } from './dto/createUser.dto';
@@ -15,28 +15,46 @@ import { ApiTags } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { UserDecorator } from './decorator';
+import { response } from 'express';
 
 
 @Controller('user')
 export class UserController {
-    constructor(private userService: UserService){}
-
+    constructor(private userService: UserService){
+      
+    }
 
     @Auth(Role.ADMIN)
     @Get('/')
     @UseInterceptors(CacheInterceptor)
     getUsers(
+      @UserDecorator() user,@Res() res,
       @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-      @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 5,
+      @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number = 5,
     ): Promise<Pagination<User>>  {
       limit = limit > 100 ? 100 : limit;
       console.log("cache:", 'run' )
+      
+      res.render('index',{
+        name: user.name,
+        user: user,
+        users: user.data,
+        paginate: user.total,
+        page: user.page,
+      }); 
+
       return this.userService.paginate({
         page,
-        limit
+        limit,
       });
     }
 
+    @Get('/create')
+    @Render('create.ejs')
+    root() {
+  
+    }
+    
     //get by id 
     @Get(':id')
     findOne(@Param('id') id:string ){
@@ -49,6 +67,7 @@ export class UserController {
       console.log('run here');
       return this.userService.findOneById(id);
     }
+
 
     @Post('/create')
     @UseInterceptors(
@@ -73,13 +92,14 @@ export class UserController {
     }
 
     
-    @Post('/create')
-    @HttpCode(200)
-    @UsePipes(ValidationPipe)  
-    async register(@Body() UserCreate: createUserDto){
-      return this.userService.create(UserCreate)
-    }
+    // @Post('/create')
+    // @HttpCode(200)
+    // @UsePipes(ValidationPipe)  
+    // async register(@Body() UserCreate: createUserDto){
+    //   return this.userService.create(UserCreate)
+    // }
 
+    
     @Delete(':id')
     remove(@Param('id') id: number){
         return this.userService.remove(+id);
@@ -92,17 +112,19 @@ export class UserController {
     }
 
     @Auth(Role.USER)
-    @Post('vote/:voteUserId/:itemId/')
-    vote(
+    @Post('vote/:itemId/:qtt/')
+    async vote(
       @Param('itemId') itemId: number,
-      @Param('voteUserId') voteUserId: number,
+      @Param('qtt') voteUserId: number,
+      @UserDecorator() user,
     ) {
-      return this.userService.vote(voteUserId,itemId)
+      console.log(voteUserId, itemId)
+      return await this.userService.vote(voteUserId,itemId, user)
     }
 
     @Auth(Role.ADMIN)
     @Post('/addMoney/:id/:amount')
-    addMoney(@Param('id') id: number,@Body() amount: number): Promise<User> {
+    addMoney(@Param('id') id: number,@Param('amount') amount: number): Promise<User> {
       console.log("amount: ", amount)
       return this.userService.addMoney(id, amount)
     }
