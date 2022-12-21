@@ -9,12 +9,16 @@ import { Poll } from './entities/poll.entity';
 import { Item } from '../items/entities/item.entity';
 import { Vote } from '../vote/entities/vote.entity';
 import { PollGateway } from './poll.gateway';
+import { BullModule } from '@nestjs/bull';
+import { PollProcessor } from './poll.processor';
 @Module({
   imports: [TypeOrmModule.forFeature([Poll, Item, Vote]),
     ScheduleModule.forRoot(),
     CacheModule.register(),
+    BullModule.registerQueue({name: 'poll'}),
   ],
   controllers: [PollController],
-  providers: [PollService, PollGateway]
+  providers: [PollService],
+  exports: [PollService]
 })
 export class PollModule {}

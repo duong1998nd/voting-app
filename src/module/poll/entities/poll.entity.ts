@@ -16,8 +16,8 @@ export class Poll {
   @Column({type: 'datetime'})
   end: Date; 
 
-  @Column({default: 0})
-  status: boolean;
+  @Column({ type: 'tinyint', default: () => 0 })
+  status:number;
 
   @Column({ type: 'datetime',   default: () => 'NOW()' })
   created_at: Date; 
@@ -27,9 +27,6 @@ export class Poll {
 
   @Column({ type: 'datetime', nullable: true })
   delete_at: Date;
-   
-  @ManyToOne(() => User, user => user.poll)
-  user: User;
 
   @OneToMany(()=> Item, (item) => item.id)
   item: Item[];

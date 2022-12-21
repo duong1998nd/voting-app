@@ -52,9 +52,6 @@ export class User extends BaseEntity {
   @Column({ type: 'datetime', nullable: true })
   delete_at: Date;
 
-  @OneToMany(() => Poll, poll => poll.user)
-  poll: Poll[];
-
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 8);

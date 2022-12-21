@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Delete, UsePipes, Param, ValidationPipe, Patch, UploadedFile, UseInterceptors, Render, UseGuards, CacheInterceptor, Query, DefaultValuePipe, ParseIntPipe, Res, Req } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Delete, UsePipes, Param, ValidationPipe, Patch, UploadedFile, UseInterceptors, Render, UseGuards, CacheInterceptor, Query, DefaultValuePipe, ParseIntPipe, Res, Req, Redirect } from '@nestjs/common';
 import { updateUserDto } from './dto/updateUser.dto';
 import { loginUserDto } from './dto/loginUser.dto';
 import { createUserDto } from './dto/createUser.dto';
@@ -24,38 +24,58 @@ export class UserController {
       
     }
 
+    // @Auth(Role.ADMIN)
+    // @Get('/')
+    // @UseInterceptors(CacheInterceptor)
+    // getUsers(
+    //   @UserDecorator() user,@Res() res,
+    //   @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    //   @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number = 5,
+    // ): Promise<Pagination<User>>  {
+    //   limit = limit > 100 ? 100 : limit;
+    //   console.log("cache:", 'run' )
+      
+    //   res.render('index',{
+    //     name: user.name,
+    //     user: user,
+    //     users: user.data,
+    //     paginate: user.total,
+    //     page: user.page,
+    //   }); 
+
+    //   return this.userService.paginate({
+    //     page,
+    //     limit,
+    //   });
+    // }
     @Auth(Role.ADMIN)
     @Get('/')
     @UseInterceptors(CacheInterceptor)
-    getUsers(
-      @UserDecorator() user,@Res() res,
-      @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    async getUsers(
+      @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 2,
       @Query('limit', new DefaultValuePipe(5), ParseIntPipe) limit: number = 5,
-    ): Promise<Pagination<User>>  {
-      limit = limit > 100 ? 100 : limit;
-      console.log("cache:", 'run' )
-      
-      res.render('index',{
-        name: user.name,
-        user: user,
-        users: user.data,
-        paginate: user.total,
-        page: user.page,
-      }); 
-
-      return this.userService.paginate({
+      @Res() res : any
+    )  {
+      limit = limit > 100 ? 100 : limit; 
+      const data =  await this.userService.paginate({
         page,
-        limit,
+        limit,       
       });
+      res.render('user',{
+        data: data,
+        page : page,
+        limit : limit,
+      })
     }
 
     @Get('/create')
-    @Render('create.ejs')
-    root() {
-  
+    @Redirect('/user')
+    root(@Res() res: any) {
+      return res.render('user/create')
     }
     
     //get by id 
+    @Auth(Role.ADMIN)
     @Get(':id')
     findOne(@Param('id') id:string ){
         return this.userService.findOneById(id);
@@ -68,6 +88,13 @@ export class UserController {
       return this.userService.findOneById(id);
     }
 
+    //api
+    @Get('/api/all')
+    @UseInterceptors(CacheInterceptor)
+     getUserss(){
+        return this.userService.findAll();
+      }
+  
 
     @Post('/create')
     @UseInterceptors(
@@ -99,11 +126,22 @@ export class UserController {
     //   return this.userService.create(UserCreate)
     // }
 
+    @Post('/create')
+    @HttpCode(200)
+    @UsePipes(ValidationPipe)  
+    async register(@Body() UserCreate: createUserDto){
+      return this.userService.create(UserCreate)
+    }
     
     @Delete(':id')
     remove(@Param('id') id: number){
         return this.userService.remove(+id);
+    }
 
+    @Get('delete/:id')
+    @Redirect('/user')
+    removeView(@Param('id') id: number){
+      return this.userService.remove(+id);
     }
 
     @Patch(':id')
@@ -112,14 +150,13 @@ export class UserController {
     }
 
     @Auth(Role.USER)
-    @Post('vote/:itemId/:qtt/')
+    @Post('vote/:itemId')
     async vote(
       @Param('itemId') itemId: number,
-      @Param('qtt') voteUserId: number,
       @UserDecorator() user,
     ) {
-      console.log(voteUserId, itemId)
-      return await this.userService.vote(voteUserId,itemId, user)
+      console.log(itemId)
+      return await this.userService.vote(itemId, user)
     }
 
     @Auth(Role.ADMIN)

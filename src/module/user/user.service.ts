@@ -37,7 +37,7 @@ export class UserService {
 
   async paginate(options: IPaginationOptions): Promise<Pagination<User>> {
     const queryBuilder = this.UserRepo.createQueryBuilder('c');
-    queryBuilder.orderBy('c.name', 'DESC'); // orderBy name 
+    queryBuilder.orderBy('c.id', 'DESC'); // orderBy id 
 
     return paginate<User>(queryBuilder, options);
   }
@@ -112,34 +112,30 @@ export class UserService {
     return await this.UserRepo.update(+id, userUpdateDto);
   }
 
-  async vote(itemId: number, qtt: number, user) {
-
-    const item = await this.itemRepository.findOne({
-      where: {id: itemId}
-    })
+  async vote(itemId: number, user) {
+    const item = await this.itemRepository.findOne({where: {id: itemId}})
+    console.log("item", item);
     
-        const voteQtt = item.voteQtt += 1;
-    console.log("voteQtt", voteQtt)
-    
-    if (voteQtt < 1) {
-      this.itemService.updateVote(qtt, itemId);
-    } else {
+    const voteQtt = item.voteQtt
       let fee = 1;
       // lần sau gấp đôi lần trước
-      let voteFee = fee * 2^voteQtt;
+      let voteFee = (fee + voteQtt) * 2 ;
       let moneyLeft = user.money - voteFee;
+      
       if (user.money < voteFee) {
         console.log("moneyLeft:", moneyLeft)
         return {
           message: 'ko đủ tiền'
         } 
       } else {
-        this.UserRepo.update(qtt, {
+        this.UserRepo.update(user.id,{
           money: moneyLeft,
         });
-        this.itemService.updateVote(qtt,itemId);
+        this.itemService.updateVote(itemId);
+        console.log("itemId", itemId);
+        
       }
-    }
+    
   }
 
 

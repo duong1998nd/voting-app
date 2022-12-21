@@ -13,10 +13,16 @@ import { redis } from 'src/redis';
 import { Item } from '../items/entities/item.entity';
 import { Vote } from '../vote/entities/vote.entity';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { delay } from 'rxjs';
 
 @Injectable()  
 export class PollService {
   constructor(
+    @InjectQueue('poll') 
+    private pollQueue: Queue,
+
     @InjectRepository(Poll)
     private readonly pollsRepository: Repository<Poll>,
 
@@ -27,64 +33,64 @@ export class PollService {
     private readonly voteRepository: Repository<Vote>,
 
     private schedulerRegistry: SchedulerRegistry,
+    private dataResource: DataSource,
   ) {
    
   }
 
-  // create(createPollDto: CreatePollDto): Promise<Poll> {
-  //   return this.pollsRepository.save(createPollDto);
-  // }
-  // voteQueryBuilder() {
-  //   return this.dataSource
-  //       .getRepository(Poll)
-  //       .createQueryBuilder()
-  // }
 
-  private readonly logger = new Logger(PollService.name);
-
-  
-    async create(createPollDto: CreatePollDto): Promise<Poll | ErrorResponse[]> {
-      console.log(createPollDto.start)
-      if (new Date(createPollDto.start).getDate() >= new Date(createPollDto.end).getDate()) {
+  async create(createPollDto: CreatePollDto): Promise<Poll | ErrorResponse[]> {
+    if (new Date(createPollDto.start).getDate() >= new Date(createPollDto.end).getDate()) {
         return errorMessage("error", 'ngày bắt đầu phải trước ngày kết thúc');
-      }
-      
-    const job_start = new CronJob(new Date(createPollDto.start), () => {
-      this.logger.warn(`Cuộc bình chọn ${createPollDto.name} sẽ bắt đầu lúc (${new Date(createPollDto.start)})!`);      
-    });  
-
-    await this.schedulerRegistry.addCronJob(createPollDto.name, job_start);
-    await job_start.start();
-
-    await this.logger.warn(
-      `job ${createPollDto.name} added for each minute at ${new Date(createPollDto.start)} seconds!`,
-    );
-
-
-    const job_end = new CronJob(new Date(createPollDto.end), () => {
-       this.logger.warn(`Cuộc bình chọn ${createPollDto.name} sẽ kết thúc lúc (${new Date(createPollDto.end)})!`)
-       job_end.stop();
-    });
-    
-    await job_end.start();
-
-    await this.logger.warn(
-      `job ${createPollDto.name} stoped for each minute at ${new Date(createPollDto.end)} seconds!`,
-    );
-
-    const jobs = this.schedulerRegistry.getCronJobs();
-     jobs.forEach((value, key, _map) => {
-        let next;
-        try {
-          next = value.nextDates().toJSDate();
-        } catch (e) {
-          next = 'error: next fire date is in the past!';
-        }
-        this.logger.log(`job: ${key} -> next: ${next}`);
-      });
-     await this.pollsRepository.save(createPollDto);
-
+    }
+    await this.pollQueue.add('startPoll', UpdatePollDto)
+    console.log(`Cuộc thi ${createPollDto.name} bắt đầu lúc ${createPollDto.start}`)
+    await this.pollsRepository.save(createPollDto);
   }
+
+  // private readonly logger = new Logger(PollService.name);
+  //   async create(createPollDto: CreatePollDto): Promise<Poll | ErrorResponse[]> {
+  //     console.log(createPollDto.start)
+  //     if (new Date(createPollDto.start).getDate() >= new Date(createPollDto.end).getDate()) {
+  //       return errorMessage("error", 'ngày bắt đầu phải trước ngày kết thúc');
+  //     }
+      
+  //   const job_start = new CronJob(new Date(createPollDto.start), () => {
+  //     this.logger.warn(`Cuộc bình chọn ${createPollDto.name} sẽ bắt đầu lúc (${new Date(createPollDto.start)})!`);      
+  //   });  
+
+  //   await this.schedulerRegistry.addCronJob(createPollDto.name, job_start);
+  //   await job_start.start();
+
+  //   await this.logger.warn(
+  //     `job ${createPollDto.name} added for each minute at ${new Date(createPollDto.start)} seconds!`,
+  //   );
+
+
+  //   const job_end = new CronJob(new Date(createPollDto.end), () => {
+  //      this.logger.warn(`Cuộc bình chọn ${createPollDto.name} sẽ kết thúc lúc (${new Date(createPollDto.end)})!`)
+  //      job_end.stop();
+  //   });
+    
+  //   await job_end.start();
+
+  //   await this.logger.warn(
+  //     `job ${createPollDto.name} stoped for each minute at ${new Date(createPollDto.end)} seconds!`,
+  //   );
+
+  //   const jobs = this.schedulerRegistry.getCronJobs();
+  //    jobs.forEach((value, key, _map) => {
+  //       let next;
+  //       try {
+  //         next = value.nextDates().toJSDate();
+  //       } catch (e) {
+  //         next = 'error: next fire date is in the past!';
+  //       }
+  //       this.logger.log(`job: ${key} -> next: ${next}`);
+  //     });
+  //    await this.pollsRepository.save(createPollDto);
+
+  // }
 
 
   async vote(
@@ -121,9 +127,32 @@ export class PollService {
     return true;
   }
 
-  // findAll(): Promise<Poll[]> {
-  //   return this.pollsRepository.find();
+  findAll() {
+    return this.pollsRepository.find();
+  }
+  // async findAll(){
+  //   const getItemPerPoll = await this.dataResource
+  //   .getRepository(Item)
+  //   .createQueryBuilder("item")
+  //   .innerJoinAndSelect("item.poll","poll")
+  //   .cache(true)
+  //   .getMany()    
+  //   return getItemPerPoll
   // }
+
+
+ // find list of items in poll
+  async findItem(id: number){
+    const getItemPerPoll = await this.dataResource
+    .getRepository(Item)
+    .createQueryBuilder("item")
+    .innerJoinAndSelect("item.poll","poll")
+    .orderBy('item.voteQtt', 'ASC')
+    .where("poll.id = :id",{ id: id})
+    .cache(true)
+    .getMany()    
+    return getItemPerPoll
+  }
   
   async paginate(options: IPaginationOptions): Promise<Pagination<Poll>> {
   const queryBuilder = this.pollsRepository.createQueryBuilder('c');
@@ -139,6 +168,7 @@ export class PollService {
       // relations: ['item'],
     });
   }
+  
   // findOne(id: number) : Promise<Poll> {
   //   return this.pollsRepository.findOneBy({id});
   // }

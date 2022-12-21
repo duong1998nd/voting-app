@@ -28,11 +28,14 @@ export class AppController {
     private authService: AuthService,
     private userService: UserService
   ) { }
-  
+
+  @Auth(Role.ADMIN)
   @Get('/')
   @Render('index')
   async homePage(@UserDecorator() user: any,@Req() req: Request) {
-    
+    return {
+      user: user,
+    }
   }
 
   @Get('log-in')
@@ -42,7 +45,7 @@ export class AppController {
   @HttpCode(200)
   @UseGuards(JwtStrategy)
   @Post('log-in')
-  @Redirect('/profile')
+  @Redirect('/')
   async logIn(@Req() req: Request, @Res() response: Response) {
     const cookie = this.authService.login(req.body);
     response.setHeader('Set-Cookie', await cookie);
@@ -54,10 +57,10 @@ export class AppController {
   @Get('profile')
   @Render('index')
   async Info(@UserDecorator() user: any) {
-   return { name: user.name}
+   return { user: user}
   }
 
-  @Auth(Role.USER, Role.ADMIN)
+  @Auth(Role.USER)
   @Get('api/profile')
   async ApiInfo(@UserDecorator() user: any,@Res() res: Response) {
     res.send({

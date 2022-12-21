@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
+import { IPaginationOptions,paginate, Pagination } from 'nestjs-typeorm-paginate';
+import { DataSource, Repository, UpdateResult } from 'typeorm';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { Item } from './entities/item.entity';
@@ -10,6 +11,7 @@ export class ItemService {
   constructor(
     @InjectRepository(Item)
     private itemRepository: Repository<Item>,
+    private dataResource: DataSource,
   ) {
   }
   create(createItemDto: CreateItemDto): Promise<Item> {
@@ -20,6 +22,22 @@ export class ItemService {
 
   findAll() : Promise<Item[]> {
     return this.itemRepository.find();
+  }
+
+  async paginate(options: IPaginationOptions): Promise<Pagination<Item>> {
+    const queryBuilder = this.itemRepository.createQueryBuilder('c');
+    queryBuilder.orderBy('c.name', 'DESC'); // orderBy name 
+  
+    return paginate<Item>(queryBuilder, options);
+  }
+
+  async showItem() {
+    const data = await this.dataResource.getRepository(Item)
+    .createQueryBuilder("item")
+    .innerJoinAndSelect("item.poll","poll")
+    .cache(true)
+    .getMany();
+    return data
   }
 
   findOne(id: number) : Promise<Item> {
@@ -36,22 +54,23 @@ export class ItemService {
 
   async vote(id:number){
     const item = await this.itemRepository.findOne({where: {id}})
+    console.log("item", item);
+    
     let vote = item.voteQtt ++
-    if(vote > 0 && vote == 1){
+    if( vote == 1){
       return await  this.itemRepository.save(item);
     }else{
       return 'không thành công'
     }
   }
 
-  async updateVote(userId: number,itemId:number){
-    const item = await this.itemRepository.findOne({where: {
-      id: itemId
-    }})
-    const voteQtt=item.voteQtt+= 1;
-    console.log("id:", itemId)
+  async updateVote(itemId:number){
+    
+    const voteQtt = await this.findOne(itemId)
+    
+    const voteQttUpdate = voteQtt.voteQtt ++;
     return await this.itemRepository.update(itemId,{
-      voteQtt: voteQtt
+      voteQtt: voteQttUpdate
     })
   }
 

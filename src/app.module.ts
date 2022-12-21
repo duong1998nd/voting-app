@@ -13,18 +13,36 @@ import { VoteModule } from './module/vote/vote.module';
 import * as redisStore from 'cache-manager-redis-store';
 // import { LocalStrategy } from './auth/local.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { BullModule } from '@nestjs/bull';
+import { PollService } from './module/poll/poll.service';
 
 
 
 @Module({
-  imports: [UserModule, PollModule, TypeOrmModule.forRoot(typeormConfig), ItemModule, 
+  imports: [PollModule, UserModule, TypeOrmModule.forRoot(typeormConfig), ItemModule, 
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     AuthModule,
     UserModule,
-    CacheModule.registerAsync({
+    BullModule.forRootAsync({
       imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) =>{
+        return  ({
+          redis: {
+            host: configService.get('REDIS_HOST'),
+            port: Number(configService.get('REDIS_PORT')),
+          },
+        })
+      },
+      inject: [ConfigService]
+    }),
+
+    
+    CacheModule.registerAsync({
+      imports: [
+        ConfigModule,    
+      ],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         isGlobal: true,
