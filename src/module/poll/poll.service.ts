@@ -168,6 +168,11 @@ export class PollService {
       // relations: ['item'],
     });
   }
+
+  async showAll() {
+    const [data, total] = await this.pollsRepository.findAndCount()
+    return {  data: data, total: total  }
+  }
   
   // findOne(id: number) : Promise<Poll> {
   //   return this.pollsRepository.findOneBy({id});

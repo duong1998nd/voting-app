@@ -14,7 +14,7 @@ import { Role } from './auth/roles/enum';
 import { RolesGuard } from './auth/roles/guard';
 import { createUserDto } from './module/user/dto/createUser.dto';
 import { UserService } from './module/user/user.service';
-import { Request, Response } from 'express';
+import { Request, response, Response } from 'express';
 import RequestWithUser from './auth/requestWithUser.interface';
 import { request } from 'http';
 import { UserDecorator } from './module/user/decorator';
@@ -39,7 +39,7 @@ export class AppController {
   }
 
   @Get('log-in')
-  @Render('login.ejs')
+  @Render('login')
   async logInUser() {}
 
   @HttpCode(200)
@@ -51,6 +51,13 @@ export class AppController {
     response.setHeader('Set-Cookie', await cookie);
     req.body.password = undefined;
     return {}
+  }
+
+  @Get('api/log-in')
+  async ApiLogin(@Res() res: any, @Req() req: any) {
+    res.send({
+      data: req.body
+    })
   }
 
   @Auth(Role.ADMIN)
@@ -75,8 +82,11 @@ export class AppController {
     return await this.userService.create(userCreate);
   }
 
+
+  @Auth(Role.ADMIN)
   @Get('log-out')
-  async logout(){
-    return await this.authService.getCookieForLogOut()
+  async logout( @Res() res: Response ) {
+    res.setHeader('Set-Cookie', await this.authService.getCookieForLogOut())
+    return res.redirect('/');
   }
 }

@@ -45,6 +45,14 @@ export class PollController {
         user: user
       })
   }
+
+  @Get('api')
+  async allApi(@Res() res: any) {
+    const api = await this.pollService.showAll();
+    res.send({
+      poll: api.data
+    })
+  }
   
   @Get('/create')
   async root(@Res() res : any) {
@@ -113,7 +121,7 @@ export class PollController {
 
   @Auth(Role.ADMIN)
   @Get('itemPerPoll/:id')
-  async admin_list_candidates(@Param('id') id:number,@Res() res: any,@UserDecorator() user: any){
+  async listItem(@Param('id') id:number,@Res() res: any,@UserDecorator() user: any){
     const names = await this.pollService.findOne(id);
     const itemPerPoll = await this.pollService.findItem(id);
     
@@ -123,12 +131,21 @@ export class PollController {
       itemPerPoll,
     });
   }
-
-
-  @Get('api/all')
-  all() {
-    return this.pollService.findAll();
+  
+  @Get('api/itemPerPoll/:id')
+  async apiList(@Param('id') id:number,@Res() res: any,@UserDecorator() user: any){
+    const names = await this.pollService.findOne(id);
+    const itemPerPoll = await this.pollService.findItem(id);
+    
+    res.send({
+      user: user,
+      names,
+      itemPerPoll,
+    });
   }
+
+
+  
   @Get('/api/:id')
   findOneapi(@Param('id') id: string) {
     return this.pollService.findOne(+id);

@@ -27,6 +27,16 @@ export class ItemController {
     })
   }
   
+  @Get('delete/:id')
+  delete(@Param('id') id: string,@Res() res: any,@UserDecorator() user: any,) {
+    try {
+      const candidate = this.itemService.remove(+id);
+      res.redirect('/item/show')
+    } catch (error) {
+      return 'Lỗi rồi'
+    }
+  }
+  
   @Auth(Role.ADMIN)
   @Get('show')
   async show(@Res() res: any ,@UserDecorator() user: any) {

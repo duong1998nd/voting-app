@@ -69,7 +69,6 @@ export class UserController {
     }
 
     @Get('/create')
-    @Redirect('/user')
     root(@Res() res: any) {
       return res.render('user/create')
     }
@@ -88,6 +87,18 @@ export class UserController {
       return this.userService.findOneById(id);
     }
 
+    @Auth(Role.ADMIN)
+    @Get('myVote/:id')
+    async myVote(@Param('id') id:number,@Res() res: any,@UserDecorator() user: any){
+    const history = await this.userService.myVote(id)
+    console.log(history);
+    
+    res.render('voted',{
+      user: user,
+      history,
+    });
+  }
+
     //api
     @Get('/api/all')
     @UseInterceptors(CacheInterceptor)
@@ -97,6 +108,7 @@ export class UserController {
   
 
     @Post('/create')
+    @Redirect('/user')
     @UseInterceptors(
         FileInterceptor('image', {
           storage: diskStorage({
@@ -118,7 +130,6 @@ export class UserController {
         return this.userService.create(createUserDto);
     }
 
-    
     // @Post('/create')
     // @HttpCode(200)
     // @UsePipes(ValidationPipe)  

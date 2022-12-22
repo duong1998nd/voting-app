@@ -17,5 +17,8 @@ export class Vote {
     @ManyToOne(() => User, User => User.id)
     user: User;
 
+    @Column({ type: 'datetime',default: () => 'NOW()'})
+    createdAt: Date
+
 }
 

@@ -24,10 +24,15 @@ export class UserService {
     @InjectRepository(User)
     private readonly UserRepo: Repository<User>,
     private readonly itemService: ItemService,
+    private readonly voteService: VoteService,
     @InjectRepository(Item)
     private itemRepository: Repository<Item>,
   ) { }
-
+  clientToUser = {};
+  async idInfo(name: string, clientId: string){
+    this.clientToUser[clientId] = name;
+    return Object.values(this.clientToUser);
+  }
   // async getId(){
   //   return this.id;
   // }
@@ -114,12 +119,14 @@ export class UserService {
 
   async vote(itemId: number, user) {
     const item = await this.itemRepository.findOne({where: {id: itemId}})
-    console.log("item", item);
+    console.log("item: ", item);
     
-    const voteQtt = item.voteQtt
+    
+   
+    
       let fee = 1;
-      // lần sau gấp đôi lần trước
-      let voteFee = (fee + voteQtt) * 2 ;
+      
+      let voteFee = (fee + item.voteQtt) * 2 ;
       let moneyLeft = user.money - voteFee;
       
       if (user.money < voteFee) {
@@ -155,5 +162,12 @@ export class UserService {
       money : money,
     })
     return user
+  }
+
+  async myVote(userId: number){
+    const history = await this.voteService.myVote(userId)
+    console.log(history);
+    
+    return history;
   }
 }

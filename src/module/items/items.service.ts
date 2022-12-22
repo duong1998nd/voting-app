@@ -68,7 +68,9 @@ export class ItemService {
     
     const voteQtt = await this.findOne(itemId)
     
-    const voteQttUpdate = voteQtt.voteQtt ++;
+    const voteQttUpdate = voteQtt.voteQtt += 1;
+    console.log("voteQttUpdate", voteQttUpdate);
+    
     return await this.itemRepository.update(itemId,{
       voteQtt: voteQttUpdate
     })
