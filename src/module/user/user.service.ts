@@ -28,6 +28,7 @@ export class UserService {
     @InjectRepository(Item)
     private itemRepository: Repository<Item>,
   ) { }
+  
   clientToUser = {};
   async idInfo(name: string, clientId: string){
     this.clientToUser[clientId] = name;

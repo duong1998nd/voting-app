@@ -14,7 +14,7 @@ async function bootstrap() {
   const port = parseInt(configService.get('PORT'));
   const clientPort = parseInt(configService.get('CLIENT_PORT'));
   app.enableCors({
-    origin: `*`,
+    origin: `http://localhost:4200`,
     methods: ["GET", "POST"],
     credentials: true,
   });
