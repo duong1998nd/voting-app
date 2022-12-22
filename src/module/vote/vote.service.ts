@@ -32,6 +32,10 @@ export class VoteService {
     private dataResource: DataSource,
   ) {}
 
+  async findAll(): Promise<Vote[]> {
+    return await this.VoteRepository.find();
+  }
+
   async myVote(UserId){
     const user = await this.dataResource
     .getRepository(Vote)
